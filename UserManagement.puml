@@ -1,0 +1,57 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    + any Query()
+    + void Add()
+    + void Remove()
+    + void Update()
+}
+
+class UserACL {
+    + bool canAddPost
+    + bool canRemovePost
+    + bool canUpdatePost
+    + bool canGainMileage
+    + bool canExchangeAtShop
+    + bool isAdministrator
+    + int ToBitwiseInteger()
+    + bool Contains(UserACL other)
+}
+
+class User {
+    + UserUUID identifier
+    + string loginID
+    + string loginPasswordHash
+    + string email
+    + UserACL acl
+}
+
+class UserSessionManager implements Manager {
+    + void LoginUser(String loginID, stringPasswordHash)
+    + void Logout()
+    + User GetCurrentLogin()
+}
+
+
+
+class UserStorageController implements StorageController {}
+
+class UserPermissionManager implements Manager {
+    + {static} bool ContainsPermission(UserACL base, UserACL checkTarget)
+}
+
+User "1" --- "1" UserUUID : contains
+User "1" --- "1" UserACL : contains
+
+' User Management SubSystem
+
+class UserManagementSubSystem {
+    + {static} UserSessionManager userSessionManager
+    + {static} UserPermissionManager userPermissionManager
+    + {static} UserStorageController userStorageController
+}
+
+UserManagementSubSystem "1" --- "1" UserSessionManager : contains
+UserManagementSubSystem "1" --- "1" UserStorageController : contains
+UserManagementSubSystem "1" --- "1" UserPermissionManager : contains
+@enduml

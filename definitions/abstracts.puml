@@ -1,0 +1,9 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    any Query()
+    void Add()
+    void Remove()
+    void Update()
+}
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    any Query()
+    void Add()
+    void Remove()
+    void Update()
+}
+
+class StatisticsComputingTask {}
+
+class StatisticsComputingManager implements Manager {
+    + any QueryStaticsLog()
+}
+
+class StatisticsLogStorageController implements StorageController {}
+
+class StatisticsComputingScheduleHandler {
+    - StatisticsComputingTask task
+    + InvokeComputing()
+}
+
+StatisticsComputingScheduleHandler "1" --- "1" StatisticsComputingTask : contains
+
+' StatisticsComputing SubSystem
+class StatisticsComputingSubSystem {
+    + {static} StatisticsComputingManager statisticsComputing
+    + {static} StatisticsLogStorageController statisticsLogStorageController
+    + {static} List<StatisticsComputingScheduleHandler> statisticsComputingScheduleHandlers
+    + {static} void InterruptComputingTask()
+}
+
+StatisticsComputingSubSystem "1" --- "1" StatisticsComputingManager : contains
+StatisticsComputingSubSystem "1" --- "1" StatisticsLogStorageController : contains
+StatisticsComputingSubSystem "1" --- "N" StatisticsComputingScheduleHandler : contains
+
+@enduml

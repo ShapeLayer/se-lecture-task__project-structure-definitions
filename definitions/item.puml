@@ -1,0 +1,15 @@
+@startuml
+enum ItemType {
+    Real
+    Virtual
+}
+
+class Item {
+    ItemUUID identifier
+    ItemType type
+    string staticAssetID
+}
+
+Item "1" --- "1" ItemUUID : contains
+Item "1" --- "1" ItemType : contains
+@enduml

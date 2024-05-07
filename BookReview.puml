@@ -1,0 +1,30 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    + any Query()
+    + void Add()
+    + void Remove()
+    + void Update()
+}
+
+class BookReviewManager implements Manager {
+    + any QueryBookReview()
+    + void AddBookReview()
+    + void RemoveBookReview()
+    + void UpdateBookReview()
+}
+
+class BookReviewStorageController implements StorageController {
+}
+
+BookReviewManager *-- BookReviewStorageController : use
+
+' BookReview SubSystem
+
+class BookReviewSubSystem {
+    + {static} BookReviewStorageController bookReviewStorageController
+    + {static} BookReviewManager bookReviewManager
+}
+BookReviewSubSystem "1" --- "1" BookReviewStorageController
+BookReviewSubSystem "1" --- "1" BookReviewManager
+@enduml

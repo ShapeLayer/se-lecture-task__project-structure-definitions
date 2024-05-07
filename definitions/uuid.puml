@@ -1,0 +1,11 @@
+@startuml
+class UUID extends String
+class UserUUID extends UUID
+class ItemUUID extends UUID
+class MileageShopItemUUID extends UUID
+class RealItemUUID extends ItemUUID
+class VirItemUUID extends ItemUUID
+class AchievementUUID extends UUID
+class AuthorUUID extends UUID
+class BookUUID extends UUID
+@enduml

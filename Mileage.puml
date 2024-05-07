@@ -1,0 +1,57 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    + any Query()
+    + void Add()
+    + void Remove()
+    + void Update()
+}
+
+class Mileage {
+    + UserUUID identifier
+    + i64 mileage
+}
+
+class MileageShopItem {
+    + MileageShopItemUUID identifier
+    + Item item
+}
+
+MileageShopItem "1" --- "1" MileageShopItemUUID : contains
+MileageShopItem "1" --- "1" Item : contains
+
+' Mileage SubSystem
+
+class MileageManager implements Manager {
+}
+
+class MileageStorageController implements StorageController{
+}
+
+class MileageSubSystem {
+    + {static} MileageManager mileageManager
+    + {static} MileageStorageController mileageStorageController
+}
+
+MileageSubSystem "1" --- "1" MileageManager : contains
+MileageSubSystem "1" --- "1" MileageStorageController : contains
+
+' MileageShop SubSystem
+
+class MileageShopManager implements Manager {
+    + void Buy()
+}
+
+class MileageShopManagementManager implements Manager {
+    + void Add(Item item)
+    + void Update(MileageShopItemUUID identifier, Item item)
+    + void Remove(MileageShopItemUUID identifier)
+}
+
+class MileageShopSubSystem {
+    + {static} MileageShopManagementManager mileageshopManagement
+    + {static} MileageShopeManager mileageShopManager
+}
+MileageShopSubSystem "1" --- "1" MileageShopManagementManager : contains
+MileageShopSubSystem "1" --- "1" MileageShopManager : contains
+@enduml

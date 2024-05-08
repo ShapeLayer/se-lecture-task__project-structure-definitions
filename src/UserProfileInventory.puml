@@ -1,0 +1,111 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    + any Query()
+    + void Add()
+    + void Remove()
+    + void Update()
+}
+class UUID {}
+class UserUUID extends UUID {}
+class ItemUUID extends UUID {}
+
+enum VirtItemType {
+    ProfileDisplayObject
+}
+
+class VirtItem {
+    ItemUUID identifier
+    VirtItemType type
+    string name
+    VirtItemContent content
+}
+
+VirtItem "1" *-- "1" ItemUUID : contains
+VirtItem "1" *-- "1" VirtItemType : contains
+VirtItem "1" *-- "1" VirtItemContent : contains
+
+abstract class VirtItemContent {}
+
+' UserInventory
+class ItemUserOwns {
+    + UserUUID userIdentifier
+    + ItemUUID itemIdentifier
+    + int quantity
+}
+
+ItemUserOwns "1" *-- "1" UserUUID : contains
+ItemUserOwns "1" *-- "1" ItemUUID : contains
+
+class UserInventory {
+    + List<ItemUserOwns> itemsUserOwns
+}
+
+UserInventory "1" *-- "N" ItemUserOwns : contains
+
+class UserInventoryManager implements Manager {
+    + {static} UserInventory GetUserInventory()
+}
+
+UserInventoryManager --- UserInventory : use
+
+class UserInventoryStorageController implements StorageController {}
+UserInventoryStorageController --- User : use
+
+class UserInventorySubSystem {
+    + {static} UserInventoryManager userInventoryManager
+    + {static} UserInventoryStorageController userInventoryStorageController
+}
+
+UserInventorySubSystem "1" *-- "1" UserInventoryManager : contains
+UserInventorySubSystem "1" *-- "1" UserInventoryStorageController : contains
+
+' UserProfile
+enum ProfileDisplayObjectType {
+    ThemeDefinition
+    StreakChartTheme
+    StatisticsChart
+    StatisticsChartTheme
+    Stand
+    Cover
+    Badge
+    Overlay
+}
+
+class ProfileDisplayObjectOptions {}
+
+class ProfileDisplayObject extends VirtItemContent {
+    + ProfileDisplayObjectType type
+    + ProfileDisplayObjectOptions options
+}
+
+ProfileDisplayObject "1" *-- "1" ProfileDisplayObjectType : contains
+ProfileDisplayObject "1" *-- "1" ProfileDisplayObjectOptions : contains
+
+class UserProfile {
+    + UserUUID user
+    + List<ProfileDisplayObject> userProfileDisplayObjects
+}
+
+UserProfile "1" *-- "1" UserUUID : contains
+UserProfile "1" *-- "N" ProfileDisplayObject : contains
+
+class UserProfileManager implements Manager {
+    + {static} UserProfile GetUserProfile()
+    + {static} void UpdateUserProfile(UserUUID user, List<ProfileDisplayObject> userProfileDisplayObjects)
+}
+
+UserProfileManager --- UserProfile : use
+UserProfileManager --- ProfileDisplayObject : use
+
+class UserProfileStorageController implements StorageController {}
+
+class UserProfileSubSystem {
+    + {static} UserProfileManager userProfileManager
+    + {static} UserProfileStorageController userProfileStorageController
+}
+
+UserProfileSubSystem "1" *-- "1" UserProfileManager : contains
+UserProfileSubSystem "1" *-- "1" UserProfileStorageController : contains
+
+@enduml

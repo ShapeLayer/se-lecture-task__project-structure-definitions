@@ -7,17 +7,47 @@ Interface StorageController {
     + void Update()
 }
 
+enum MarkupType {
+    Text
+    Highlight
+    Line
+    Shape
+    CustomRaster
+    CustomVector
+}
+
+struct ArticleMarkup {
+    MarkupType type
+    string content
+}
+
+ArticleMarkup "1" *-- "1" MarkupType : contains
+
+struct Article {
+    + string title
+    + string content
+    + List<ArticleMarkup> markups
+}
+
+Article "1" *-- "N" ArticleMarkup : contains
+
+struct BookReview extends Article {
+    + Book book
+}
+
 class BookReviewManager implements Manager {
-    + any QueryBookReview()
+    + BookReview QueryBookReview()
     + void AddBookReview()
     + void RemoveBookReview()
     + void UpdateBookReview()
 }
 
-class BookReviewStorageController implements StorageController {
-}
+BookReviewManager --- BookReview : use
+BookReviewManager --- BookReviewStorageController : use
 
-BookReviewManager *-- BookReviewStorageController : use
+class BookReviewStorageController implements StorageController {}
+
+BookReviewStorageController --- BookReview : use
 
 ' BookReview SubSystem
 
@@ -25,6 +55,6 @@ class BookReviewSubSystem {
     + {static} BookReviewStorageController bookReviewStorageController
     + {static} BookReviewManager bookReviewManager
 }
-BookReviewSubSystem "1" --- "1" BookReviewStorageController
-BookReviewSubSystem "1" --- "1" BookReviewManager
+BookReviewSubSystem "1" *-- "1" BookReviewStorageController
+BookReviewSubSystem "1" *-- "1" BookReviewManager
 @enduml

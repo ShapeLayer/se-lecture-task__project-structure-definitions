@@ -1,0 +1,59 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    + any Query()
+    + void Add()
+    + void Remove()
+    + void Update()
+}
+
+class BookReviewManager implements Manager {
+    + any QueryBookReview()
+    + void AddBookReview()
+    + void RemoveBookReview()
+    + void UpdateBookReview()
+}
+
+struct Author {
+    + AuthorUUID identifier
+    + string name
+}
+
+struct Publisher {
+    + OrganizationUUID identifier
+    + string name
+}
+
+struct PublishRev {
+    + date date
+    + int rev
+    + int print
+}
+
+struct Book {
+    + BookUUID identifier
+    + string title
+    + List<Author> authors
+    + List<Author> translators
+    + Publisher publisher
+    + int page
+    + List<PublishRev> publishRevs
+    + string isbn
+}
+
+' BookDatabaseSubSystem
+
+class BookDatabaseManager implements Manager {}
+
+class BookDatabaseStorageController implements StorageController {}
+BookDatabaseStorageController --- Book : use
+
+class BookDatabaseSubSystem {
+    + {static} BookDatabaseManager bookDatabaseManager
+    + {static} BookDatabaseStorageController bookDatabaseStorageController
+}
+
+BookDatabaseSubSystem "1" --- "1" BookDatabaseManager : contains
+BookDatabaseSubSystem "1" --- "1" BookDatabaseStorageController : contains
+
+@enduml

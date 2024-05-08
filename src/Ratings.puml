@@ -1,0 +1,33 @@
+@startuml
+Interface Manager
+Interface StorageController {
+    + any Query()
+    + void Add()
+    + void Remove()
+    + void Update()
+}
+
+class Rating {
+    + UserUUID identifier
+    + any ratings
+}
+
+class RatingManager implements Manager {
+    + {static} Rating GetCurrentUserRating()
+}
+
+RatingManager --- User : use
+RatingManager --- Rating : use
+
+class RatingStorageController implements StorageController {}
+RatingStorageController --- Rating : use
+
+class RatingsSubSystem {
+    + {static} RatingManager ratingManager
+    + {static} RatingStorageController ratingStorageController
+}
+
+RatingsSubSystem "1" *-- "1" RatingManager : contains
+RatingsSubSystem "1" *-- "1" RatingStorageController : contains
+
+@enduml

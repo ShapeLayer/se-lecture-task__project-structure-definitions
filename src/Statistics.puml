@@ -1,17 +1,31 @@
 @startuml
 Interface Manager
 Interface StorageController {
-    any Query()
-    void Add()
-    void Remove()
-    void Update()
+    + any Query()
+    + void Add()
+    + void Remove()
+    + void Update()
 }
 
-class StatisticsComputingTask {}
+' Statistics
+
+class StatisticsComputingData {
+    + Dictionary<K, V> params
+}
+
+class StatisticsComputingTask {
+    + StatisticsComputingData statisticsComputingData
+}
+
+StatisticsComputingTask "1" --- "1" StatisticsComputingData : contains
 
 class StatisticsComputingManager implements Manager {
     + any QueryStaticsLog()
 }
+
+StatisticsComputingManager --- User : use
+
+' Todo: StatisticsLog
 
 class StatisticsLogStorageController implements StorageController {}
 
@@ -20,7 +34,8 @@ class StatisticsComputingScheduleHandler {
     + InvokeComputing()
 }
 
-StatisticsComputingScheduleHandler "1" --- "1" StatisticsComputingTask : contains
+StatisticsComputingScheduleHandler "1" --- "1" BookReviewManager : use
+StatisticsComputingScheduleHandler "1" *-- "1" StatisticsComputingTask : contains
 
 ' StatisticsComputing SubSystem
 class StatisticsComputingSubSystem {
@@ -30,8 +45,8 @@ class StatisticsComputingSubSystem {
     + {static} void InterruptComputingTask()
 }
 
-StatisticsComputingSubSystem "1" --- "1" StatisticsComputingManager : contains
-StatisticsComputingSubSystem "1" --- "1" StatisticsLogStorageController : contains
-StatisticsComputingSubSystem "1" --- "N" StatisticsComputingScheduleHandler : contains
+StatisticsComputingSubSystem "1" *-- "1" StatisticsComputingManager : contains
+StatisticsComputingSubSystem "1" *-- "1" StatisticsLogStorageController : contains
+StatisticsComputingSubSystem "1" *-- "N" StatisticsComputingScheduleHandler : contains
 
 @enduml

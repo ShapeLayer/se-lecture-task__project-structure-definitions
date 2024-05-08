@@ -1,4 +1,5 @@
 @startuml
+' Commons
 Interface Manager
 Interface StorageController {
     + any Query()
@@ -7,36 +8,96 @@ Interface StorageController {
     + void Update()
 }
 
-class Mileage {
+enum ItemType {
+    Real
+    Virtual
+}
+
+class ItemContent {}
+class ItemMetadata {}
+class RealItemMetadata extends ItemMetadata {}
+class VirtItemMetadata extends ItemMetadata {}
+
+struct Item {
+    + ItemUUID identifier
+    + ItemType type
+    + string staticAssetID
+    + string name
+    + ItemContent content
+    + ItemMetadata metadata
+}
+
+Item "1" *-- "1" ItemUUID : contains
+Item "1" *-- "1" ItemType : contains
+Item "1" *-- "1" ItemContent : contains
+Item "1" *-- "1" ItemMetadata : contains
+
+class RealItem extends Item {}
+class VirtItem extends Item {}
+
+struct Mileage {
     + UserUUID identifier
     + i64 mileage
 }
 
-class MileageShopItem {
-    + MileageShopItemUUID identifier
-    + Item item
-}
-
-MileageShopItem "1" --- "1" MileageShopItemUUID : contains
-MileageShopItem "1" --- "1" Item : contains
+Mileage -- User : < owns
 
 ' Mileage SubSystem
 
-class MileageManager implements Manager {
+enum MileageChangeOperationType {
+    Add
+    Sub
+    Set
 }
 
-class MileageStorageController implements StorageController{
+class MileageChangeOperationDesc {}
+
+struct MileageChangeLog {
+    + DateTime invoked
+    + UserUUID issuer
+    + UserUUID target
+    + MileageChangeOperationType type
+    + MileageChangeOperationDesc descStreo
+    + string descManual
 }
+
+MileageChangeLog "1" *-- UserUUID : contains
+MileageChangeLog "1" *-- "1" MileageChangeOperationType : contains
+MileageChangeLog "1" *-- "1" MileageChangeOperationDesc : contains
+
+class MileageManager implements Manager {
+    + {static} Mileage GetUserMileage()
+}
+
+MileageManager --- User : use
+MileageManager --- Mileage : use
+
+class MileageChangeLogManager {
+    + MileageChangeLog GetMileageChangeLog()
+}
+
+class MileageChangeLogStorageController implements StorageController {}
+MileageChangeLogStorageController --- MileageChangeLog : use
+
+class MileageStorageController implements StorageController{}
+MileageStorageController --- Mileage : use
 
 class MileageSubSystem {
     + {static} MileageManager mileageManager
     + {static} MileageStorageController mileageStorageController
 }
 
-MileageSubSystem "1" --- "1" MileageManager : contains
-MileageSubSystem "1" --- "1" MileageStorageController : contains
+MileageSubSystem "1" *-- "1" MileageManager : contains
+MileageSubSystem "1" *-- "1" MileageStorageController : contains
 
 ' MileageShop SubSystem
+struct MileageShopItem {
+    + MileageShopItemUUID identifier
+    + Item item
+}
+
+MileageShopItem "1" *-- "1" MileageShopItemUUID : contains
+MileageShopItem "1" *-- "1" Item : contains
 
 class MileageShopManager implements Manager {
     + void Buy()
@@ -52,6 +113,6 @@ class MileageShopSubSystem {
     + {static} MileageShopManagementManager mileageshopManagement
     + {static} MileageShopeManager mileageShopManager
 }
-MileageShopSubSystem "1" --- "1" MileageShopManagementManager : contains
-MileageShopSubSystem "1" --- "1" MileageShopManager : contains
+MileageShopSubSystem "1" *-- "1" MileageShopManagementManager : contains
+MileageShopSubSystem "1" *-- "1" MileageShopManager : contains
 @enduml

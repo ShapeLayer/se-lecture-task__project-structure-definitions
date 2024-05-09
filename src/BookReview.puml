@@ -36,16 +36,20 @@ struct BookReview extends Article {
 }
 
 class BookReviewManager implements Manager {
-    + BookReview QueryBookReview()
-    + void AddBookReview()
-    + void RemoveBookReview()
-    + void UpdateBookReview()
+    + BookReview RequestQueryBookReview()
+    + void RequestAddBookReview()
+    + void RequestRemoveBookReview()
+    + void RequestUpdateBookReview()
 }
 
 BookReviewManager --- BookReview : use
 BookReviewManager --- BookReviewStorageController : use
 
-class BookReviewStorageController implements StorageController {}
+class BookReviewStorageQueryOptimizer {}
+class BookReviewStorageController implements StorageController {
+    + BookReviewStorageQueryOptimizer optimizer
+}
+BookReviewStorageController "1" *-- "1" BookReviewStorageQueryOptimizer : contains
 
 BookReviewStorageController --- BookReview : use
 

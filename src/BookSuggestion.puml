@@ -7,6 +7,17 @@ Interface StorageController {
     + void Update()
 }
 
+enum BookSuggestionManualRequestType {
+    Normal
+    NewCategory
+    EmotionBased
+}
+struct BookSuggestionManualRequest {
+    + BookSuggestionManualRequestType type
+    + string prompt
+}
+BookSuggestionManualRequest "1" *-- "1" BookSuggestionManualRequestType : contains
+
 struct BookSuggestion {}
 
 class BookSuggestionWorker {}
@@ -18,7 +29,12 @@ class BookSuggestionScheduler {
 
 BookSuggestionScheduler "1" *-- "1" BookSuggestionWorker : contains
 
-class BookSuggestionManager implements Manager {}
+class BookSuggestionManager implements Manager {
+    + {static} void InvokeBookSuggestionManual(BookSuggestionManualRequest req)
+}
+BookSuggestionManager --- BookSuggestionManualRequest : use
+BookSuggestionManager --- BookSuggestionScheduler : use
+
 class BookSuggestionStorageController implements StorageController {}
 BookSuggestionStorageController --- BookSuggestion : use
 

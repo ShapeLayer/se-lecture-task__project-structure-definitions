@@ -1,6 +1,6 @@
 @startuml
 Interface Manager
-Interface StorageController {
+Interface StorageController<T> {
     any Query()
     void Add()
     void Remove()

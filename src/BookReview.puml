@@ -1,7 +1,7 @@
 @startuml
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
@@ -18,14 +18,14 @@ enum MarkupType {
 
 struct ArticleMarkup {
     MarkupType type
-    string content
+    String content
 }
 
 ArticleMarkup "1" o-- "1" MarkupType : contains
 
 struct Article {
-    + string title
-    + string content
+    + String title
+    + String content
     + List<ArticleMarkup> markups
 }
 

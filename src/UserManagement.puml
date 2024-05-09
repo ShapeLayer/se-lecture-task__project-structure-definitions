@@ -1,7 +1,7 @@
 @startuml
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
@@ -20,9 +20,9 @@ class UserACL {
 
 class User {
     + UserUUID identifier
-    + string loginID
-    + string loginPasswordHash
-    + string email
+    + String loginID
+    + String loginPasswordHash
+    + String email
     + UserACL acl
 }
 
@@ -32,7 +32,7 @@ class UserManager implements Manager {
 UserManager --- User : use
 
 class UserSessionManager implements Manager {
-    + void LoginUser(string loginID, string loginPasswordHash)
+    + void LoginUser(String loginID, String loginPasswordHash)
     + void Logout()
     + User GetCurrentLogin()
 }

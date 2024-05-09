@@ -1,8 +1,8 @@
 @startuml
 ' Commons
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
@@ -21,8 +21,8 @@ class VirtItemMetadata extends ItemMetadata {}
 struct Item {
     + ItemUUID identifier
     + ItemType type
-    + string staticAssetID
-    + string name
+    + String staticAssetID
+    + String name
     + ItemContent content
     + ItemMetadata metadata
 }
@@ -58,7 +58,7 @@ struct MileageChangeLog {
     + UserUUID target
     + MileageChangeOperationType type
     + MileageChangeOperationDesc descStreo
-    + string descManual
+    + String descManual
 }
 
 MileageChangeLog "1" o-- UserUUID : contains

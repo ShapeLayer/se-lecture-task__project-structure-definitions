@@ -1,7 +1,7 @@
 @startuml
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
@@ -9,13 +9,13 @@ Interface StorageController {
 
 struct Author {
     + AuthorUUID identifier
-    + string name
+    + String name
 }
 Author "1" --- "1" AuthorUUID : contains
 
 struct Publisher {
     + OrganizationUUID identifier
-    + string name
+    + String name
 }
 Publisher "1" --- "1" OrganizationUUID : contains
 
@@ -27,14 +27,14 @@ struct PublishRev {
 
 struct Book {
     + BookUUID identifier
-    + string title
+    + String title
     + List<Image> covers
     + List<Author> authors
     + List<Author> translators
     + Publisher publisher
     + int page
     + List<PublishRev> publishRevs
-    + string isbn
+    + String isbn
 }
 Book "1" o-- "1" BookUUID : contains
 Book "1" o-- "N" Image : contains
@@ -51,7 +51,7 @@ BookDatabaseStorageController --- Book : use
 
 class BookDatabaseSubSystem {
     + {static} BookDatabaseManager bookDatabaseManager
-    + {static} BookDatabaseStorageController bookDatabaseStorageController
+    + {static} BookDatabaseStorageController bookDatabaseStorageController<T>
 }
 
 BookDatabaseSubSystem "1" --- "1" BookDatabaseManager : contains

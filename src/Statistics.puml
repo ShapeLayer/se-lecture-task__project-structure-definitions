@@ -1,7 +1,7 @@
 @startuml
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
@@ -37,7 +37,7 @@ class StatisticsLogStorageController implements StorageController {}
 
 class StatisticsComputingScheduleHandler {
     - StatisticsComputingTask task
-    + InvokeComputing()
+    + void InvokeComputing()
 }
 
 StatisticsComputingScheduleHandler "1" --- "1" BookReviewManager : use

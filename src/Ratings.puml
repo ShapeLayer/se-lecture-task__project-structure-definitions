@@ -1,14 +1,14 @@
 @startuml
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
 }
 
 class Tier {
-    + string name
+    + String name
 }
 
 struct RatingTierMatch {

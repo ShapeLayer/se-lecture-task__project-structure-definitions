@@ -1,7 +1,7 @@
 @startuml
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
@@ -17,7 +17,7 @@ enum VirtItemType {
 class VirtItem {
     ItemUUID identifier
     VirtItemType type
-    string name
+    String name
     VirtItemContent content
 }
 

@@ -7,7 +7,7 @@ enum ItemType {
 class Item {
     ItemUUID identifier
     ItemType type
-    string staticAssetID
+    String staticAssetID
 }
 
 Item "1" --- "1" ItemUUID : contains

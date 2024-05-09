@@ -1,14 +1,14 @@
 @startuml
 Interface Manager
-Interface StorageController {
-    + any Query()
+Interface StorageController<T> {
+    + T Query()
     + void Add()
     + void Remove()
     + void Update()
 }
 
 class EmotionChecklist {
-    + string toPrompt()
+    + String toPrompt()
 }
 
 enum BookSuggestionManualRequestType {
@@ -18,7 +18,7 @@ enum BookSuggestionManualRequestType {
 }
 struct BookSuggestionManualRequest {
     + BookSuggestionManualRequestType type
-    + string prompt
+    + String prompt
 }
 BookSuggestionManualRequest "1" o-- "1" BookSuggestionManualRequestType : contains
 EmotionChecklist --o BookSuggestionManualRequest : use

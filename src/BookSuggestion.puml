@@ -44,6 +44,7 @@ class BookSuggestionManager implements Manager {
 }
 BookSuggestionManager --- BookSuggestionManualRequest : use
 BookSuggestionManager --- BookSuggestionScheduler : use
+BookSuggestionManager --- BookSuggestionStorageController : use
 
 class BookSuggestionStorageController<T> implements StorageController {}
 BookSuggestionStorageController --- BookSuggestion : use

@@ -30,6 +30,7 @@ class UserManager implements Manager {
     + void Register(User _new)
 }
 UserManager --- User : use
+UserManager --- UserStorageController : use
 
 class UserSessionManager implements Manager {
     + void LoginUser(String loginID, String loginPasswordHash)
@@ -37,6 +38,7 @@ class UserSessionManager implements Manager {
     + User GetCurrentLogin()
 }
 UserSessionManager --- User : use
+UserSessionManager --- UserStorageController : use
 
 class UserStorageController<T> implements StorageController {}
 UserStorageController --- User : use

@@ -43,6 +43,7 @@ class UserInventoryManager implements Manager {
 }
 
 UserInventoryManager --- UserInventory : use
+UserInventoryManager --- UserInventoryStorageController : use
 
 class UserInventoryStorageController<T> implements StorageController {}
 UserInventoryStorageController --- User : use
@@ -92,6 +93,7 @@ class UserProfileManager implements Manager {
 UserProfileManager --- UserUUID : use
 UserProfileManager --- UserProfile : use
 UserProfileManager --- ProfileDisplayObject : use
+UserProfileManager --- UserProfileStorageController : use
 
 class UserProfileStorageController<T> implements StorageController {}
 

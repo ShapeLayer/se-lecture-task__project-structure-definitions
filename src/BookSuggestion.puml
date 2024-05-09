@@ -8,6 +8,7 @@ Interface StorageController<T> {
 }
 
 class EmotionChecklist {
+    + Dictionary<K, bool> checkList
     + String toPrompt()
 }
 
@@ -41,6 +42,7 @@ BookSuggestionScheduler "1" o-- "1" BookSuggestionWorker : contains
 
 class BookSuggestionManager implements Manager {
     + {static} void InvokeBookSuggestionManual(BookSuggestionManualRequest req)
+    + {static} void PushBookSuggestionRequestQueue()
 }
 BookSuggestionManager --- BookSuggestionManualRequest : use
 BookSuggestionManager --- BookSuggestionScheduler : use

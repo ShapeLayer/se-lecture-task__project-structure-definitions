@@ -54,7 +54,7 @@ BookSuggestionStorageController --- BookSuggestion : use
 class BookSuggestionSubSystem {
     + {static} BookSuggestionManager bookSuggestionManager
     + {static} BookSuggestionStorageController bookSuggestionStorageController
-    + List<BookSuggestionScheduler> bookSuggestionSchedulers
+    + {static} List<BookSuggestionScheduler> bookSuggestionSchedulers
 }
 
 BookSuggestionSubSystem "1" o-- "1" BookSuggestionManager : contains

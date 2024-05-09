@@ -107,6 +107,8 @@ MileageShopItem "1" o-- "1" Item : contains
 class MileageShopManager implements Manager {
     + void Buy()
 }
+MileageShopManager --- MileageShopStorageController : use
+MileageShopManager --- MileageStorageController : use
 
 class MileageShopManagementManager implements Manager {
     + void Add(Item item)
@@ -114,15 +116,19 @@ class MileageShopManagementManager implements Manager {
     + void Remove(MileageShopItemUUID identifier)
 }
 
+class UserSessionManager implements Manager {}
+
 MileageShopManagementManager --- Item : use
 MileageShopManagementManager --- MileageShopItemUUID : use
+MileageShopManagementManager --- UserSessionManager : use
+MileageShopManagementManager --- MileageShopStorageController : use
 
 class MileageShopStorageController<T> implements StorageController {}
 MileageShopStorageController --- MileageShopItem : use
 
 class MileageShopSubSystem {
     + {static} MileageShopManagementManager mileageshopManagement
-    + {static} MileageShopeManager mileageShopManager
+    + {static} MileageShopManager mileageShopManager
     + {static} MileageShopStorageController mileageShopStorageController
 }
 MileageShopSubSystem "1" o-- "1" MileageShopManagementManager : contains

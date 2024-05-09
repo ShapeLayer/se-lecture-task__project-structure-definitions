@@ -14,12 +14,7 @@ enum VirtItemType {
     ProfileDisplayObject
 }
 
-class VirtItem {
-    ItemUUID identifier
-    VirtItemType type
-    String name
-    VirtItemContent content
-}
+class VirtItem extends Item {}
 
 VirtItem "1" o-- "1" ItemUUID : contains
 VirtItem "1" o-- "1" VirtItemType : contains

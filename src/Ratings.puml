@@ -30,6 +30,9 @@ class RatingManager implements Manager {
 RatingManager "1" --- "N" RatingTierMatch : contains
 RatingManager --- User : use
 RatingManager --- Rating : use
+class UserSessionManager implements Manager {}
+RatingManager --- UserSessionManager : use
+RatingManager --- RatingStorageController : use
 
 class RatingStorageController<T> implements StorageController {}
 RatingStorageController --- Rating : use

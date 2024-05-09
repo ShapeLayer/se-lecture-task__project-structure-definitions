@@ -35,22 +35,23 @@ struct BookReview extends Article {
     + Book book
 }
 
+struct BookReviewBlob {}
+BookReviewBlob "1" --- "N" BookReview
+
 class BookReviewManager implements Manager {
-    + BookReview RequestQueryBookReview()
-    + void RequestAddBookReview()
-    + void RequestRemoveBookReview()
-    + void RequestUpdateBookReview()
+    + BookReviewBlob RequestQueryBookReviewBlob()
 }
 
-BookReviewManager --- BookReview : use
+BookReviewManager --- BookReviewBlob : use
 BookReviewManager --- BookReviewStorageController : use
 
-class BookReviewStorageQueryOptimizer {}
+class BookReviewStorageQueryOptimizer {
+    + void invoke()
+}
 class BookReviewStorageController<T> implements StorageController {
     + BookReviewStorageQueryOptimizer optimizer
 }
 BookReviewStorageController "1" o-- "1" BookReviewStorageQueryOptimizer : contains
-
 BookReviewStorageController --- BookReview : use
 
 ' BookReview SubSystem

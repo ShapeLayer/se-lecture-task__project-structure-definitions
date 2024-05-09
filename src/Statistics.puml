@@ -26,9 +26,9 @@ class StatisticsComputingTask {
 StatisticsComputingTask "1" --- "1" StatisticsComputingData : contains
 
 class StatisticsComputingManager implements Manager {
-    + any QueryStaticsLog()
+    + any QueryStatisticsLog()
 }
-
+StatisticsComputingManager --- StatisticsLogStorageController : use
 StatisticsComputingManager --- User : use
 
 ' Todo: StatisticsLog

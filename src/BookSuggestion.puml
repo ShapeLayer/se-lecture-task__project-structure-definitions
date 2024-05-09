@@ -24,8 +24,11 @@ BookSuggestionManualRequest "1" *-- "1" BookSuggestionManualRequestType : contai
 EmotionChecklist --* BookSuggestionManualRequest : use
 
 struct BookSuggestion {}
+class BookSuggestionTask {}
 
-class BookSuggestionWorker {}
+class BookSuggestionWorker {
+    - BookSuggestionTask task
+}
 BookSuggestionWorker --- BookSuggestion : use
 
 class BookSuggestionScheduler {

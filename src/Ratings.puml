@@ -31,7 +31,7 @@ RatingManager "1" --- "N" RatingTierMatch : contains
 RatingManager --- User : use
 RatingManager --- Rating : use
 
-class RatingStorageController implements StorageController {}
+class RatingStorageController<T> implements StorageController {}
 RatingStorageController --- Rating : use
 
 class RatingsSubSystem {

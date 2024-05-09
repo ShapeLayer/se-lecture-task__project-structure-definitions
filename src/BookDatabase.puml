@@ -46,7 +46,7 @@ Book "1" o-- "N" PublishRev : contains
 
 class BookDatabaseManager implements Manager {}
 
-class BookDatabaseStorageController implements StorageController {}
+class BookDatabaseStorageController<T> implements StorageController {}
 BookDatabaseStorageController --- Book : use
 
 class BookDatabaseSubSystem {

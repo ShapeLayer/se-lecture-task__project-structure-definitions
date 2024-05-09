@@ -81,10 +81,10 @@ class MileageChangeLogManager {
 
 MileageChangeLogManager --- MileageChangeLogStorageController : use
 
-class MileageChangeLogStorageController implements StorageController {}
+class MileageChangeLogStorageController<T> implements StorageController {}
 MileageChangeLogStorageController --- MileageChangeLog : use
 
-class MileageStorageController implements StorageController{}
+class MileageStorageController<T> implements StorageController{}
 MileageStorageController --- Mileage : use
 
 class MileageSubSystem {
@@ -117,7 +117,7 @@ class MileageShopManagementManager implements Manager {
 MileageShopManagementManager --- Item : use
 MileageShopManagementManager --- MileageShopItemUUID : use
 
-class MileageShopStorageController implements StorageController {}
+class MileageShopStorageController<T> implements StorageController {}
 MileageShopStorageController --- MileageShopItem : use
 
 class MileageShopSubSystem {

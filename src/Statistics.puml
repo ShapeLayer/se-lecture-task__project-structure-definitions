@@ -33,7 +33,7 @@ StatisticsComputingManager --- User : use
 
 ' Todo: StatisticsLog
 
-class StatisticsLogStorageController implements StorageController {}
+class StatisticsLogStorageController<T> implements StorageController {}
 
 class StatisticsComputingScheduleHandler {
     - StatisticsComputingTask task

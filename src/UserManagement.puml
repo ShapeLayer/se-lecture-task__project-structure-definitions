@@ -38,7 +38,7 @@ class UserSessionManager implements Manager {
 }
 UserSessionManager --- User : use
 
-class UserStorageController implements StorageController {}
+class UserStorageController<T> implements StorageController {}
 UserStorageController --- User : use
 
 User "1" o-- "1" UserUUID : contains

@@ -46,7 +46,7 @@ BookReviewManager --- BookReview : use
 BookReviewManager --- BookReviewStorageController : use
 
 class BookReviewStorageQueryOptimizer {}
-class BookReviewStorageController implements StorageController {
+class BookReviewStorageController<T> implements StorageController {
     + BookReviewStorageQueryOptimizer optimizer
 }
 BookReviewStorageController "1" o-- "1" BookReviewStorageQueryOptimizer : contains

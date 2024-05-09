@@ -4,11 +4,11 @@
 
 ## Participants
 
-* 모아림(@ariimo)
-* 유정빈(@xxbeann)
+* 모아림([@ariimo](https://github.com/ariimo))
+* 유정빈([@xxbeann](https://github.com/xxbeann))
 * 이창효
-* 박종현(@ShapeLayer)
-* 박지환(@latencyspace)
+* 박종현([@ShapeLayer](https://github.com/ShapeLayer))
+* 박지환([@latencyspace](https://github.com/latencyspace))
 
 ## Requirements
 

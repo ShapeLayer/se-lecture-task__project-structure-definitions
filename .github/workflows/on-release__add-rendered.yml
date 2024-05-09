@@ -1,0 +1,25 @@
+name: Add Rendered Images on Release
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        sudo bash -c "curl -L https://raw.githubusercontent.com/riboseinc/plantuml-install/main/ubuntu.sh | bash"
+    - name: Render Images
+      run : |
+        sh render.sh
+        tar cvf rendered.tar rendered
+    - name: Render and Package Images
+      env: 
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh release upload ${{github.event.release.tag_name}} rendered.tar

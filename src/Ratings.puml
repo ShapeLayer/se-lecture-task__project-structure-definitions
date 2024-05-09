@@ -17,7 +17,7 @@ struct RatingTierMatch {
 }
 RatingTierMatch "1" --- "1" Tier : contains
 
-class Rating {
+struct Rating {
     + UserUUID identifier
     + any ratings
 }
@@ -39,7 +39,7 @@ class RatingsSubSystem {
     + {static} RatingStorageController ratingStorageController
 }
 
-RatingsSubSystem "1" *-- "1" RatingManager : contains
-RatingsSubSystem "1" *-- "1" RatingStorageController : contains
+RatingsSubSystem "1" o-- "1" RatingManager : contains
+RatingsSubSystem "1" o-- "1" RatingStorageController : contains
 
 @enduml

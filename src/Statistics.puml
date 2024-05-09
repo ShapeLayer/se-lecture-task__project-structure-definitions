@@ -41,7 +41,7 @@ class StatisticsComputingScheduleHandler {
 }
 
 StatisticsComputingScheduleHandler "1" --- "1" BookReviewManager : use
-StatisticsComputingScheduleHandler "1" *-- "1" StatisticsComputingTask : contains
+StatisticsComputingScheduleHandler "1" o-- "1" StatisticsComputingTask : contains
 StatisticsComputingScheduleHandler --- MileageStatisticsBridge : use
 
 ' StatisticsComputing SubSystem
@@ -52,8 +52,8 @@ class StatisticsComputingSubSystem {
     + {static} void InterruptComputingTask()
 }
 
-StatisticsComputingSubSystem "1" *-- "1" StatisticsComputingManager : contains
-StatisticsComputingSubSystem "1" *-- "1" StatisticsLogStorageController : contains
-StatisticsComputingSubSystem "1" *-- "N" StatisticsComputingScheduleHandler : contains
+StatisticsComputingSubSystem "1" o-- "1" StatisticsComputingManager : contains
+StatisticsComputingSubSystem "1" o-- "1" StatisticsLogStorageController : contains
+StatisticsComputingSubSystem "1" o-- "N" StatisticsComputingScheduleHandler : contains
 
 @enduml

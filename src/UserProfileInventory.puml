@@ -21,9 +21,9 @@ class VirtItem {
     VirtItemContent content
 }
 
-VirtItem "1" *-- "1" ItemUUID : contains
-VirtItem "1" *-- "1" VirtItemType : contains
-VirtItem "1" *-- "1" VirtItemContent : contains
+VirtItem "1" o-- "1" ItemUUID : contains
+VirtItem "1" o-- "1" VirtItemType : contains
+VirtItem "1" o-- "1" VirtItemContent : contains
 
 abstract class VirtItemContent {}
 
@@ -34,14 +34,14 @@ class ItemUserOwns {
     + int quantity
 }
 
-ItemUserOwns "1" *-- "1" UserUUID : contains
-ItemUserOwns "1" *-- "1" ItemUUID : contains
+ItemUserOwns "1" o-- "1" UserUUID : contains
+ItemUserOwns "1" o-- "1" ItemUUID : contains
 
 class UserInventory {
     + List<ItemUserOwns> itemsUserOwns
 }
 
-UserInventory "1" *-- "N" ItemUserOwns : contains
+UserInventory "1" o-- "N" ItemUserOwns : contains
 
 class UserInventoryManager implements Manager {
     + {static} UserInventory GetUserInventory()
@@ -57,8 +57,8 @@ class UserInventorySubSystem {
     + {static} UserInventoryStorageController userInventoryStorageController
 }
 
-UserInventorySubSystem "1" *-- "1" UserInventoryManager : contains
-UserInventorySubSystem "1" *-- "1" UserInventoryStorageController : contains
+UserInventorySubSystem "1" o-- "1" UserInventoryManager : contains
+UserInventorySubSystem "1" o-- "1" UserInventoryStorageController : contains
 
 ' UserProfile
 enum ProfileDisplayObjectType {
@@ -79,16 +79,16 @@ class ProfileDisplayObject extends VirtItemContent {
     + ProfileDisplayObjectOptions options
 }
 
-ProfileDisplayObject "1" *-- "1" ProfileDisplayObjectType : contains
-ProfileDisplayObject "1" *-- "1" ProfileDisplayObjectOptions : contains
+ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectType : contains
+ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectOptions : contains
 
 class UserProfile {
     + UserUUID user
     + List<ProfileDisplayObject> userProfileDisplayObjects
 }
 
-UserProfile "1" *-- "1" UserUUID : contains
-UserProfile "1" *-- "N" ProfileDisplayObject : contains
+UserProfile "1" o-- "1" UserUUID : contains
+UserProfile "1" o-- "N" ProfileDisplayObject : contains
 
 class UserProfileManager implements Manager {
     + {static} UserProfile GetUserProfile()
@@ -105,7 +105,7 @@ class UserProfileSubSystem {
     + {static} UserProfileStorageController userProfileStorageController
 }
 
-UserProfileSubSystem "1" *-- "1" UserProfileManager : contains
-UserProfileSubSystem "1" *-- "1" UserProfileStorageController : contains
+UserProfileSubSystem "1" o-- "1" UserProfileManager : contains
+UserProfileSubSystem "1" o-- "1" UserProfileStorageController : contains
 
 @enduml

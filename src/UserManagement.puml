@@ -41,8 +41,8 @@ UserSessionManager --- User : use
 class UserStorageController implements StorageController {}
 UserStorageController --- User : use
 
-User "1" *-- "1" UserUUID : contains
-User "1" *-- "1" UserACL : contains
+User "1" o-- "1" UserUUID : contains
+User "1" o-- "1" UserACL : contains
 
 ' User Management SubSystem
 
@@ -52,7 +52,7 @@ class UserManagementSubSystem {
     + {static} UserStorageController userStorageController
 }
 
-UserManagementSubSystem "1" *-- "1" UserManager : contains
-UserManagementSubSystem "1" *-- "1" UserSessionManager : contains
-UserManagementSubSystem "1" *-- "1" UserStorageController : contains
+UserManagementSubSystem "1" o-- "1" UserManager : contains
+UserManagementSubSystem "1" o-- "1" UserSessionManager : contains
+UserManagementSubSystem "1" o-- "1" UserStorageController : contains
 @enduml

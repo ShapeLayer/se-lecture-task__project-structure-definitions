@@ -7,13 +7,6 @@ Interface StorageController {
     + void Update()
 }
 
-class BookReviewManager implements Manager {
-    + any QueryBookReview()
-    + void AddBookReview()
-    + void RemoveBookReview()
-    + void UpdateBookReview()
-}
-
 struct Author {
     + AuthorUUID identifier
     + string name

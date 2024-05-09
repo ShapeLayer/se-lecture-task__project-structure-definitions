@@ -7,6 +7,12 @@ Interface StorageController {
     + void Update()
 }
 
+' MileageChangeBridge
+class MileageStatisticsBridge {
+    + void UpdateMileageBasedOnStatistics()
+}
+MileageStatisticsBridge --- MileageManager : use
+
 ' Statistics
 
 class StatisticsComputingData {
@@ -36,6 +42,7 @@ class StatisticsComputingScheduleHandler {
 
 StatisticsComputingScheduleHandler "1" --- "1" BookReviewManager : use
 StatisticsComputingScheduleHandler "1" *-- "1" StatisticsComputingTask : contains
+StatisticsComputingScheduleHandler --- MileageStatisticsBridge : use
 
 ' StatisticsComputing SubSystem
 class StatisticsComputingSubSystem {

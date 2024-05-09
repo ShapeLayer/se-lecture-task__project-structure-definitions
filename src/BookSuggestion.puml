@@ -7,6 +7,10 @@ Interface StorageController {
     + void Update()
 }
 
+class EmotionChecklist {
+    + string toPrompt()
+}
+
 enum BookSuggestionManualRequestType {
     Normal
     NewCategory
@@ -17,6 +21,7 @@ struct BookSuggestionManualRequest {
     + string prompt
 }
 BookSuggestionManualRequest "1" *-- "1" BookSuggestionManualRequestType : contains
+EmotionChecklist --* BookSuggestionManualRequest : use
 
 struct BookSuggestion {}
 

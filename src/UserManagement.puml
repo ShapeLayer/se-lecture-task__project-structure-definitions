@@ -26,11 +26,17 @@ class User {
     + UserACL acl
 }
 
+class UserManager implements Manager {
+    + void Register(User _new)
+}
+UserManager --- User : use
+
 class UserSessionManager implements Manager {
-    + void LoginUser(String loginID, stringPasswordHash)
+    + void LoginUser(string loginID, string loginPasswordHash)
     + void Logout()
     + User GetCurrentLogin()
 }
+UserSessionManager --- User : use
 
 class UserStorageController implements StorageController {}
 UserStorageController --- User : use
@@ -45,11 +51,13 @@ User "1" *-- "1" UserACL : contains
 ' User Management SubSystem
 
 class UserManagementSubSystem {
+    + {static} UserManager userManager
     + {static} UserSessionManager userSessionManager
     + {static} UserPermissionManager userPermissionManager
     + {static} UserStorageController userStorageController
 }
 
+UserManagementSubSystem "1" *-- "1" UserManager : contains
 UserManagementSubSystem "1" *-- "1" UserSessionManager : contains
 UserManagementSubSystem "1" *-- "1" UserStorageController : contains
 UserManagementSubSystem "1" *-- "1" UserPermissionManager : contains

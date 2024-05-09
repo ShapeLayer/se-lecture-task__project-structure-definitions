@@ -18,11 +18,13 @@ struct Author {
     + AuthorUUID identifier
     + string name
 }
+Author "1" --- "1" AuthorUUID : contains
 
 struct Publisher {
     + OrganizationUUID identifier
     + string name
 }
+Publisher "1" --- "1" OrganizationUUID : contains
 
 struct PublishRev {
     + date date
@@ -33,6 +35,7 @@ struct PublishRev {
 struct Book {
     + BookUUID identifier
     + string title
+    + List<Image> covers
     + List<Author> authors
     + List<Author> translators
     + Publisher publisher
@@ -40,6 +43,11 @@ struct Book {
     + List<PublishRev> publishRevs
     + string isbn
 }
+Book "1" *-- "1" BookUUID : contains
+Book "1" *-- "N" Image : contains
+Book "1" *-- "N" Author : contains
+Book "1" *-- "1" Publisher : contains
+Book "1" *-- "N" PublishRev : contains
 
 ' BookDatabaseSubSystem
 

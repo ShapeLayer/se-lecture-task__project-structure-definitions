@@ -67,10 +67,12 @@ MileageChangeLog "1" *-- "1" MileageChangeOperationDesc : contains
 
 class MileageManager implements Manager {
     + {static} Mileage GetUserMileage()
+    + {static} void ChangeMileage()
 }
 
 MileageManager --- User : use
 MileageManager --- Mileage : use
+MileageManager --- MileageChangeLogManager : use
 
 class MileageChangeLogManager {
     + MileageChangeLog GetMileageChangeLog()

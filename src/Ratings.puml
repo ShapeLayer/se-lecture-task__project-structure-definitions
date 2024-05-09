@@ -7,15 +7,27 @@ Interface StorageController {
     + void Update()
 }
 
+class Tier {
+    + string name
+}
+
+struct RatingTierMatch {
+    + any[] ratingRange
+    + Tier tier
+}
+RatingTierMatch "1" --- "1" Tier : contains
+
 class Rating {
     + UserUUID identifier
     + any ratings
 }
+Rating "1" --- "1" UserUUID : contains
 
 class RatingManager implements Manager {
+    + {static} List<RatingTierMatch> ratingTierMatch
     + {static} Rating GetCurrentUserRating()
 }
-
+RatingManager "1" --- "N" RatingTierMatch : contains
 RatingManager --- User : use
 RatingManager --- Rating : use
 

@@ -94,7 +94,7 @@ class UserProfileManager implements Manager {
     + {static} UserProfile GetUserProfile()
     + {static} void UpdateUserProfile(UserUUID user, List<ProfileDisplayObject> userProfileDisplayObjects)
 }
-
+UserProfileManager --- UserUUID : use
 UserProfileManager --- UserProfile : use
 UserProfileManager --- ProfileDisplayObject : use
 

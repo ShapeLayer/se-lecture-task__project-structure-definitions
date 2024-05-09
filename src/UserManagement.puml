@@ -41,10 +41,6 @@ UserSessionManager --- User : use
 class UserStorageController implements StorageController {}
 UserStorageController --- User : use
 
-class UserPermissionManager implements Manager {
-    + {static} bool ContainsPermission(UserACL base, UserACL checkTarget)
-}
-
 User "1" *-- "1" UserUUID : contains
 User "1" *-- "1" UserACL : contains
 
@@ -53,12 +49,10 @@ User "1" *-- "1" UserACL : contains
 class UserManagementSubSystem {
     + {static} UserManager userManager
     + {static} UserSessionManager userSessionManager
-    + {static} UserPermissionManager userPermissionManager
     + {static} UserStorageController userStorageController
 }
 
 UserManagementSubSystem "1" *-- "1" UserManager : contains
 UserManagementSubSystem "1" *-- "1" UserSessionManager : contains
 UserManagementSubSystem "1" *-- "1" UserStorageController : contains
-UserManagementSubSystem "1" *-- "1" UserPermissionManager : contains
 @enduml

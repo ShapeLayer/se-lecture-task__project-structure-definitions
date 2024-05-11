@@ -1,0 +1,543 @@
+@startuml
+Interface Manager
+Interface StorageController<T> {
+    + T Query()
+    + void Add()
+    + void Remove()
+    + void Update()
+}
+class UUID extends String
+class UserUUID extends UUID
+class ItemUUID extends UUID
+class MileageShopItemUUID extends UUID
+class AchievementUUID extends UUID
+class AuthorUUID extends UUID
+class BookUUID extends UUID
+class OrganizationUUID extends UUID
+
+struct Author {
+    + AuthorUUID identifier
+    + String name
+}
+Author "1" --- "1" AuthorUUID : contains
+
+struct Publisher {
+    + OrganizationUUID identifier
+    + String name
+}
+Publisher "1" --- "1" OrganizationUUID : contains
+
+struct PublishRev {
+    + date date
+    + int rev
+    + int print
+}
+
+struct Book {
+    + BookUUID identifier
+    + String title
+    + List<Image> covers
+    + List<Author> authors
+    + List<Author> translators
+    + Publisher publisher
+    + int page
+    + List<PublishRev> publishRevs
+    + String isbn
+}
+Book "1" o-- "1" BookUUID : contains
+Book "1" o-- "N" Image : contains
+Book "1" o-- "N" Author : contains
+Book "1" o-- "1" Publisher : contains
+Book "1" o-- "N" PublishRev : contains
+
+' BookDatabaseSubSystem
+
+class BookDatabaseManager implements Manager {}
+
+class BookDatabaseStorageController<T> implements StorageController {}
+BookDatabaseStorageController --- Book : use
+
+class BookDatabaseSubSystem {
+    + {static} BookDatabaseManager bookDatabaseManager
+    + {static} BookDatabaseStorageController bookDatabaseStorageController<T>
+}
+
+BookDatabaseSubSystem "1" --- "1" BookDatabaseManager : contains
+BookDatabaseSubSystem "1" --- "1" BookDatabaseStorageController : contains
+
+enum MarkupType {
+    Text
+    Highlight
+    Line
+    Shape
+    CustomRaster
+    CustomVector
+}
+
+struct ArticleMarkup {
+    MarkupType type
+    String content
+}
+
+ArticleMarkup "1" o-- "1" MarkupType : contains
+
+struct Article {
+    + String title
+    + String content
+    + List<ArticleMarkup> markups
+}
+
+Article "1" o-- "N" ArticleMarkup : contains
+
+struct BookReview extends Article {
+    + Book book
+}
+
+struct BookReviewBlob {}
+BookReviewBlob "1" --- "N" BookReview
+
+class BookReviewManager implements Manager {
+    + BookReviewBlob RequestQueryBookReviewBlob()
+}
+
+BookReviewManager --- BookReviewBlob : use
+BookReviewManager --- BookReviewStorageController : use
+
+class BookReviewStorageQueryOptimizer {
+    + void invoke()
+}
+class BookReviewStorageController<T> implements StorageController {
+    + BookReviewStorageQueryOptimizer optimizer
+}
+BookReviewStorageController "1" o-- "1" BookReviewStorageQueryOptimizer : contains
+BookReviewStorageController --- BookReview : use
+
+' BookReview SubSystem
+
+class BookReviewSubSystem {
+    + {static} BookReviewStorageController bookReviewStorageController
+    + {static} BookReviewManager bookReviewManager
+}
+BookReviewSubSystem "1" o-- "1" BookReviewStorageController : contains
+BookReviewSubSystem "1" o-- "1" BookReviewManager : contains
+
+class EmotionChecklist {
+    + Dictionary<K, bool> checkList
+    + String toPrompt()
+}
+
+enum BookSuggestionManualRequestType {
+    Normal
+    NewCategory
+    EmotionBased
+}
+struct BookSuggestionManualRequest {
+    + BookSuggestionManualRequestType type
+    + String prompt
+}
+BookSuggestionManualRequest "1" o-- "1" BookSuggestionManualRequestType : contains
+EmotionChecklist --o BookSuggestionManualRequest : use
+
+struct BookSuggestion {}
+class BookSuggestionTask {}
+
+class BookSuggestionWorker {
+    - BookSuggestionTask task
+    - void run()
+}
+BookSuggestionWorker --- BookSuggestion : use
+
+class BookSuggestionScheduler {
+    + BookSuggestionWorker worker
+    - void invoke()
+}
+
+BookSuggestionScheduler "1" o-- "1" BookSuggestionWorker : contains
+
+class BookSuggestionManager implements Manager {
+    + {static} void InvokeBookSuggestionManual(BookSuggestionManualRequest req)
+    + {static} void PushBookSuggestionRequestQueue()
+}
+BookSuggestionManager --- BookSuggestionManualRequest : use
+BookSuggestionManager --- BookSuggestionScheduler : use
+BookSuggestionManager --- BookSuggestionStorageController : use
+
+class BookSuggestionStorageController<T> implements StorageController {}
+BookSuggestionStorageController --- BookSuggestion : use
+
+class BookSuggestionSubSystem {
+    + {static} BookSuggestionManager bookSuggestionManager
+    + {static} BookSuggestionStorageController bookSuggestionStorageController
+    + {static} List<BookSuggestionScheduler> bookSuggestionSchedulers
+}
+
+BookSuggestionSubSystem "1" o-- "1" BookSuggestionManager : contains
+BookSuggestionSubSystem "1" o-- "1" BookSuggestionStorageController : contains
+BookSuggestionSubSystem "1" o-- "N" BookSuggestionScheduler : contains
+
+
+enum ItemType {
+    Real
+    Virtual
+}
+
+class ItemContent {}
+class ItemMetadata {}
+class RealItemMetadata extends ItemMetadata {}
+class VirtItemMetadata extends ItemMetadata {}
+
+struct Item {
+    + ItemUUID identifier
+    + ItemType type
+    + String staticAssetID
+    + String name
+    + ItemContent content
+    + ItemMetadata metadata
+}
+
+Item "1" o-- "1" ItemUUID : contains
+Item "1" o-- "1" ItemType : contains
+Item "1" o-- "1" ItemContent : contains
+Item "1" o-- "1" ItemMetadata : contains
+
+class RealItem extends Item {}
+class VirtItem extends Item {}
+
+struct Mileage {
+    + UserUUID identifier
+    + i64 mileage
+}
+
+Mileage -- User : < owns
+
+' Mileage SubSystem
+
+enum MileageChangeOperationType {
+    Add
+    Sub
+    Set
+}
+
+class MileageChangeOperationDesc {}
+
+struct MileageChangeLog {
+    + DateTime invoked
+    + UserUUID issuer
+    + UserUUID target
+    + MileageChangeOperationType type
+    + MileageChangeOperationDesc descStreo
+    + String descManual
+}
+
+MileageChangeLog "1" o-- UserUUID : contains
+MileageChangeLog "1" o-- "1" MileageChangeOperationType : contains
+MileageChangeLog "1" o-- "1" MileageChangeOperationDesc : contains
+
+class MileageManager implements Manager {
+    + {static} Mileage GetUserMileage()
+    + {static} void ChangeMileage()
+}
+
+MileageManager --- User : use
+MileageManager --- Mileage : use
+MileageManager --- MileageChangeLogManager : use
+MileageManager --- MileageStorageController : use
+
+class MileageChangeLogManager {
+    + MileageChangeLog GetMileageChangeLog()
+}
+
+MileageChangeLogManager --- MileageChangeLogStorageController : use
+
+class MileageChangeLogStorageController<T> implements StorageController {}
+MileageChangeLogStorageController --- MileageChangeLog : use
+
+class MileageStorageController<T> implements StorageController{}
+MileageStorageController --- Mileage : use
+
+class MileageSubSystem {
+    + {static} MileageManager mileageManager
+    + {static} MileageStorageController mileageStorageController
+}
+
+MileageSubSystem "1" o-- "1" MileageManager : contains
+MileageSubSystem "1" o-- "1" MileageStorageController : contains
+
+' MileageShop SubSystem
+struct MileageShopItem {
+    + MileageShopItemUUID identifier
+    + Item item
+}
+
+MileageShopItem "1" o-- "1" MileageShopItemUUID : contains
+MileageShopItem "1" o-- "1" Item : contains
+
+class MileageShopManager implements Manager {
+    + void Buy()
+}
+MileageShopManager --- MileageShopStorageController : use
+MileageShopManager --- MileageStorageController : use
+
+class MileageShopManagementManager implements Manager {
+    + void Add(Item item)
+    + void Update(MileageShopItemUUID identifier, Item item)
+    + void Remove(MileageShopItemUUID identifier)
+}
+
+class UserSessionManager implements Manager {}
+
+MileageShopManagementManager --- Item : use
+MileageShopManagementManager --- MileageShopItemUUID : use
+MileageShopManagementManager --- UserSessionManager : use
+MileageShopManagementManager --- MileageShopStorageController : use
+
+class MileageShopStorageController<T> implements StorageController {}
+MileageShopStorageController --- MileageShopItem : use
+
+class MileageShopSubSystem {
+    + {static} MileageShopManagementManager mileageshopManagement
+    + {static} MileageShopManager mileageShopManager
+    + {static} MileageShopStorageController mileageShopStorageController
+}
+MileageShopSubSystem "1" o-- "1" MileageShopManagementManager : contains
+MileageShopSubSystem "1" o-- "1" MileageShopManager : contains
+MileageShopSubSystem "1" o-- "1" MileageShopStorageController : contains
+
+
+class Tier {
+    + String name
+}
+
+struct RatingTierMatch {
+    + any[] ratingRange
+    + Tier tier
+}
+RatingTierMatch "1" --- "1" Tier : contains
+
+struct Rating {
+    + UserUUID identifier
+    + any ratings
+}
+Rating "1" --- "1" UserUUID : contains
+
+class RatingManager implements Manager {
+    + {static} List<RatingTierMatch> ratingTierMatch
+    + {static} Rating GetCurrentUserRating()
+}
+RatingManager "1" --- "N" RatingTierMatch : contains
+RatingManager --- User : use
+RatingManager --- Rating : use
+class UserSessionManager implements Manager {}
+RatingManager --- UserSessionManager : use
+RatingManager --- RatingStorageController : use
+
+class RatingStorageController<T> implements StorageController {}
+RatingStorageController --- Rating : use
+
+class RatingsSubSystem {
+    + {static} RatingManager ratingManager
+    + {static} RatingStorageController ratingStorageController
+}
+
+RatingsSubSystem "1" o-- "1" RatingManager : contains
+RatingsSubSystem "1" o-- "1" RatingStorageController : contains
+
+
+' MileageChangeBridge
+class MileageStatisticsBridge {
+    + void UpdateMileageBasedOnStatistics()
+}
+MileageStatisticsBridge --- MileageManager : use
+
+' Statistics
+
+class StatisticsComputingData {
+    + Dictionary<K, V> params
+}
+
+class StatisticsComputingTask {
+    + StatisticsComputingData statisticsComputingData
+}
+
+StatisticsComputingTask "1" --- "1" StatisticsComputingData : contains
+
+class StatisticsComputingManager implements Manager {
+    + any QueryStatisticsLog()
+}
+StatisticsComputingManager --- StatisticsLogStorageController : use
+StatisticsComputingManager --- User : use
+
+' Todo: StatisticsLog
+
+class StatisticsLogStorageController<T> implements StorageController {}
+
+class StatisticsComputingScheduleHandler {
+    - StatisticsComputingTask task
+    + void InvokeComputing()
+}
+
+StatisticsComputingScheduleHandler "1" --- "1" BookReviewManager : use
+StatisticsComputingScheduleHandler "1" o-- "1" StatisticsComputingTask : contains
+StatisticsComputingScheduleHandler --- MileageStatisticsBridge : use
+
+' StatisticsComputing SubSystem
+class StatisticsComputingSubSystem {
+    + {static} StatisticsComputingManager statisticsComputing
+    + {static} StatisticsLogStorageController statisticsLogStorageController
+    + {static} List<StatisticsComputingScheduleHandler> statisticsComputingScheduleHandlers
+    + {static} void InterruptComputingTask()
+}
+
+StatisticsComputingSubSystem "1" o-- "1" StatisticsComputingManager : contains
+StatisticsComputingSubSystem "1" o-- "1" StatisticsLogStorageController : contains
+StatisticsComputingSubSystem "1" o-- "N" StatisticsComputingScheduleHandler : contains
+
+
+class UserACL {
+    + bool canAddPost
+    + bool canRemovePost
+    + bool canUpdatePost
+    + bool canGainMileage
+    + bool canExchangeAtShop
+    + bool isAdministrator
+    + int ToBitwiseInteger()
+    + bool Contains(UserACL other)
+}
+
+class User {
+    + UserUUID identifier
+    + String loginID
+    + String loginPasswordHash
+    + String email
+    + UserACL acl
+}
+
+class UserManager implements Manager {
+    + void Register(User _new)
+}
+UserManager --- User : use
+UserManager --- UserStorageController : use
+
+class UserSessionManager implements Manager {
+    + void LoginUser(String loginID, String loginPasswordHash)
+    + void Logout()
+    + User GetCurrentLogin()
+}
+UserSessionManager --- User : use
+UserSessionManager --- UserStorageController : use
+
+class UserStorageController<T> implements StorageController {}
+UserStorageController --- User : use
+
+User "1" o-- "1" UserUUID : contains
+User "1" o-- "1" UserACL : contains
+
+' User Management SubSystem
+
+class UserManagementSubSystem {
+    + {static} UserManager userManager
+    + {static} UserSessionManager userSessionManager
+    + {static} UserStorageController userStorageController
+}
+
+UserManagementSubSystem "1" o-- "1" UserManager : contains
+UserManagementSubSystem "1" o-- "1" UserSessionManager : contains
+UserManagementSubSystem "1" o-- "1" UserStorageController : contains
+
+
+enum VirtItemType {
+    ProfileDisplayObject
+}
+
+class VirtItem extends Item {}
+
+VirtItem "1" o-- "1" ItemUUID : contains
+VirtItem "1" o-- "1" VirtItemType : contains
+VirtItem "1" o-- "1" VirtItemContent : contains
+
+abstract class VirtItemContent {}
+
+' UserInventory
+class ItemUserOwns {
+    + UserUUID userIdentifier
+    + ItemUUID itemIdentifier
+    + int quantity
+}
+
+ItemUserOwns "1" o-- "1" UserUUID : contains
+ItemUserOwns "1" o-- "1" ItemUUID : contains
+
+class UserInventory {
+    + List<ItemUserOwns> itemsUserOwns
+}
+
+UserInventory "1" o-- "N" ItemUserOwns : contains
+
+class UserInventoryManager implements Manager {
+    + {static} UserInventory GetUserInventory()
+}
+
+UserInventoryManager --- UserInventory : use
+UserInventoryManager --- UserInventoryStorageController : use
+
+class UserInventoryStorageController<T> implements StorageController {}
+UserInventoryStorageController --- User : use
+
+class UserInventorySubSystem {
+    + {static} UserInventoryManager userInventoryManager
+    + {static} UserInventoryStorageController userInventoryStorageController
+}
+
+UserInventorySubSystem "1" o-- "1" UserInventoryManager : contains
+UserInventorySubSystem "1" o-- "1" UserInventoryStorageController : contains
+
+' UserProfile
+enum ProfileDisplayObjectType {
+    ThemeDefinition
+    StreakChartTheme
+    StatisticsChart
+    StatisticsChartTheme
+    Stand
+    Cover
+    Badge
+    Overlay
+}
+
+class ProfileDisplayObjectOptions {}
+
+class ProfileDisplayObject extends VirtItemContent {
+    + ProfileDisplayObjectType type
+    + ProfileDisplayObjectOptions options
+}
+
+ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectType : contains
+ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectOptions : contains
+
+class UserProfile {
+    + UserUUID user
+    + List<ProfileDisplayObject> userProfileDisplayObjects
+}
+
+UserProfile "1" o-- "1" UserUUID : contains
+UserProfile "1" o-- "N" ProfileDisplayObject : contains
+
+class UserProfileManager implements Manager {
+    + {static} UserProfile GetUserProfile()
+    + {static} void UpdateUserProfile(UserUUID user, List<ProfileDisplayObject> userProfileDisplayObjects)
+}
+UserProfileManager --- UserUUID : use
+UserProfileManager --- UserProfile : use
+UserProfileManager --- ProfileDisplayObject : use
+UserProfileManager --- UserProfileStorageController : use
+
+class UserProfileStorageController<T> implements StorageController {}
+
+class UserProfileSubSystem {
+    + {static} UserProfileManager userProfileManager
+    + {static} UserProfileStorageController userProfileStorageController
+}
+
+UserProfileSubSystem "1" o-- "1" UserProfileManager : contains
+UserProfileSubSystem "1" o-- "1" UserProfileStorageController : contains
+
+@enduml

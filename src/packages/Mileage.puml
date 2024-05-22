@@ -1,0 +1,163 @@
+@startuml
+package Commons {
+    Interface Manager
+    Interface StorageController<T> {
+        + T Query()
+        + void Add()
+        + void Remove()
+        + void Update()
+    }
+
+    class UUID
+    class UserUUID extends UUID
+    class ItemUUID extends UUID
+    class MileageShopItemUUID extends UUID
+    class AchievementUUID extends UUID
+    class AuthorUUID extends UUID
+    class BookUUID extends UUID
+    class OrganizationUUID extends UUID
+}
+
+
+package Item {
+    enum ItemType {
+        Real
+        Virtual
+    }
+
+    class ItemContent {}
+    class ItemMetadata {}
+    class RealItemMetadata extends ItemMetadata {}
+    class VirtItemMetadata extends ItemMetadata {}
+
+    struct Item {
+        + Commons.ItemUUID identifier
+        + ItemType type
+        + String staticAssetID
+        + String name
+        + ItemContent content
+        + ItemMetadata metadata
+    }
+
+    Item "1" o-- "1" Commons.ItemUUID : contains
+    Item "1" o-- "1" ItemType : contains
+    Item "1" o-- "1" ItemContent : contains
+    Item "1" o-- "1" ItemMetadata : contains
+
+    class RealItem extends Item {}
+    class VirtItem extends Item {}
+}
+
+
+package User.Commons {
+    class User {
+    }
+}
+
+package Mileage.Commons {
+    struct Mileage {
+        + Commons.UserUUID identifier
+        + i64 mileage
+    }
+
+    Mileage -- User.Commons.User : < owns
+}
+
+package Mileage.Management {
+    ' Mileage SubSystem
+    enum MileageChangeOperationType {
+        Add
+        Sub
+        Set
+    }
+
+    class MileageChangeOperationDesc {}
+
+    struct MileageChangeLog {
+        + DateTime invoked
+        + Commons.UserUUID issuer
+        + Commons.UserUUID target
+        + MileageChangeOperationType type
+        + MileageChangeOperationDesc descStreo
+        + String descManual
+    }
+
+    MileageChangeLog "1" o-- Commons.UserUUID : contains
+    MileageChangeLog "1" o-- "1" MileageChangeOperationType : contains
+    MileageChangeLog "1" o-- "1" MileageChangeOperationDesc : contains
+
+    class MileageManager implements Commons.Manager {
+        + {static} Mileage GetUserMileage()
+        + {static} void ChangeMileage()
+    }
+
+    MileageManager --- User.Commons.User : use
+    MileageManager --- Mileage.Commons.Mileage : use
+    MileageManager --- MileageChangeLogManager : use
+    MileageManager --- MileageStorageController : use
+
+    class MileageChangeLogManager {
+        + MileageChangeLog GetMileageChangeLog()
+    }
+
+    MileageChangeLogManager --- MileageChangeLogStorageController : use
+
+    class MileageChangeLogStorageController<T> implements Commons.StorageController {}
+    MileageChangeLogStorageController --- MileageChangeLog : use
+
+    class MileageStorageController<T> implements Commons.StorageController{}
+    MileageStorageController --- Mileage.Commons.Mileage : use
+
+    class MileageSubSystem {
+        + {static} MileageManager mileageManager
+        + {static} MileageStorageController mileageStorageController
+    }
+
+    MileageSubSystem "1" o-- "1" MileageManager : contains
+    MileageSubSystem "1" o-- "1" MileageStorageController : contains
+}
+
+package User.UserManagement {
+    class UserSessionManager implements Commons.Manager {}
+}
+
+package Mileage.Shop {
+    ' MileageShop SubSystem
+    struct MileageShopItem {
+        + Commons.MileageShopItemUUID identifier
+        + Item.Item item
+    }
+
+    MileageShopItem "1" o-- "1" Commons.MileageShopItemUUID : contains
+    MileageShopItem "1" o-- "1" Item.Item : contains
+
+    class MileageShopManager implements Commons.Manager {
+        + void Buy()
+    }
+    MileageShopManager --- MileageShopStorageController : use
+    MileageShopManager --- MileageStorageController : use
+
+    class MileageShopManagementManager implements Commons.Manager {
+        + void Add(Item item)
+        + void Update(Commons.MileageShopItemUUID identifier, Item.Item item)
+        + void Remove(Commons.MileageShopItemUUID identifier)
+    }
+
+    MileageShopManagementManager --- Item.Item : use
+    MileageShopManagementManager --- Commons.MileageShopItemUUID : use
+    MileageShopManagementManager --- User.UserManagement.UserSessionManager : use
+    MileageShopManagementManager --- MileageShopStorageController : use
+
+    class MileageShopStorageController<T> implements Commons.StorageController {}
+    MileageShopStorageController --- MileageShopItem : use
+
+    class MileageShopSubSystem {
+        + {static} MileageShopManagementManager mileageshopManagement
+        + {static} MileageShopManager mileageShopManager
+        + {static} MileageShopStorageController mileageShopStorageController
+    }
+    MileageShopSubSystem "1" o-- "1" MileageShopManagementManager : contains
+    MileageShopSubSystem "1" o-- "1" MileageShopManager : contains
+    MileageShopSubSystem "1" o-- "1" MileageShopStorageController : contains
+}
+@enduml

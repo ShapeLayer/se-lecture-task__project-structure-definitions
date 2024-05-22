@@ -1,0 +1,78 @@
+@startuml
+package Commons {
+    Interface Manager
+    Interface StorageController<T> {
+        + T Query()
+        + void Add()
+        + void Remove()
+        + void Update()
+    }
+}
+
+
+package User.Commons {
+    class User
+}
+package Books.BookReview {
+    class BookReviewManager
+}
+package Mileage.Management {
+    class MileageManager
+}
+
+
+package Statistics.Commons {
+    ' MileageChangeBridge
+    class MileageStatisticsBridge {
+        + void UpdateMileageBasedOnStatistics()
+    }
+    MileageStatisticsBridge --- Mileage.Management.MileageManager : use
+}
+
+package Statistics.Computings {
+    ' Statistics
+    class StatisticsComputingData {
+        + Dictionary<K, V> params
+    }
+
+    class StatisticsComputingTask {
+        + StatisticsComputingData statisticsComputingData
+    }
+
+    StatisticsComputingTask "1" --- "1" StatisticsComputingData : contains
+
+}
+
+package Statistics.Management {
+
+    class StatisticsComputingManager implements Commons.Manager {
+        + any QueryStatisticsLog()
+    }
+    StatisticsComputingManager --- Statistics.Management.StatisticsLogStorageController : use
+    StatisticsComputingManager --- User.Commons.User : use
+    ' Todo: StatisticsLog
+
+    class StatisticsLogStorageController<T> implements Commons.StorageController {}
+
+    class StatisticsComputingScheduleHandler {
+        - Statistics.Computings.StatisticsComputingTask task
+        + void InvokeComputing()
+    }
+
+    StatisticsComputingScheduleHandler "1" --- "1" Books.BookReview.BookReviewManager : use
+    StatisticsComputingScheduleHandler "1" o-- "1" Statistics.Computings.StatisticsComputingTask : contains
+    StatisticsComputingScheduleHandler --- Statistics.Commons.MileageStatisticsBridge : use
+
+    ' StatisticsComputing SubSystem
+    class StatisticsComputingSubSystem {
+        + {static} StatisticsComputingManager statisticsComputing
+        + {static} StatisticsLogStorageController statisticsLogStorageController
+        + {static} List<StatisticsComputingScheduleHandler> statisticsComputingScheduleHandlers
+        + {static} void InterruptComputingTask()
+    }
+
+    StatisticsComputingSubSystem "1" o-- "1" StatisticsComputingManager : contains
+    StatisticsComputingSubSystem "1" o-- "1" StatisticsLogStorageController : contains
+    StatisticsComputingSubSystem "1" o-- "N" StatisticsComputingScheduleHandler : contains
+}
+@enduml

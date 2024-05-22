@@ -1,0 +1,44 @@
+@startuml
+package Commons {
+    Interface Manager
+    Interface StorageController<T> {
+        + T Query()
+        + void Add()
+        + void Remove()
+        + void Update()
+    }
+
+    class UUID
+    class UserUUID extends UUID
+    class ItemUUID extends UUID
+    class MileageShopItemUUID extends UUID
+    class AchievementUUID extends UUID
+    class AuthorUUID extends UUID
+    class BookUUID extends UUID
+    class OrganizationUUID extends UUID
+}
+
+package Article {
+    enum MarkupType {
+        Text
+        Highlight
+        Line
+        Shape
+        CustomRaster
+        CustomVector
+    }
+
+    struct ArticleMarkup {
+        MarkupType type
+        String content
+    }
+
+    ArticleMarkup "1" o-- "1" MarkupType : contains
+
+    struct Article {
+        + String title
+        + String content
+        + List<ArticleMarkup> markups
+    }
+}
+@enduml

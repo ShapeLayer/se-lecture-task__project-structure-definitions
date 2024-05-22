@@ -1,0 +1,173 @@
+@startuml
+package Commons {
+    Interface Manager
+    Interface StorageController<T> {
+        + T Query()
+        + void Add()
+        + void Remove()
+        + void Update()
+    }
+
+    class UserUUID extends UUID
+    class ItemUUID extends UUID
+}
+
+package Item {
+    enum ItemType {
+        Real
+        Virtual
+    }
+
+    class Item {
+        ItemUUID identifier
+        ItemType type
+        String staticAssetID
+    }
+
+    Item "1" --- "1" Commons.ItemUUID : contains
+    Item "1" --- "1" ItemType : contains
+    abstract class VirtItemContent {}
+}
+
+package User.Commons {
+    class UserACL {
+        + bool canAddPost
+        + bool canRemovePost
+        + bool canUpdatePost
+        + bool canGainMileage
+        + bool canExchangeAtShop
+        + bool isAdministrator
+        + int ToBitwiseInteger()
+        + bool Contains(UserACL other)
+    }
+
+    class User {
+        + Commons.UserUUID identifier
+        + String loginID
+        + String loginPasswordHash
+        + String email
+        + UserACL acl
+    }
+}
+
+package User.Management {
+    class UserManager implements Commons.Manager {
+        + void Register(User.Commons.User _new)
+    }
+    UserManager --- User.Commons.User : use
+    UserManager --- UserStorageController : use
+
+    class UserSessionManager implements Commons.Manager {
+        + void LoginUser(String loginID, String loginPasswordHash)
+        + void Logout()
+        + User.Commons.User GetCurrentLogin()
+    }
+    UserSessionManager --- User.Commons.User : use
+    UserSessionManager --- UserStorageController : use
+
+    class UserStorageController<T> implements Commons.StorageController {}
+    UserStorageController --- User.Commons.User : use
+
+    User.Commons.User "1" o-- "1" Commons.UserUUID : contains
+    User.Commons.User "1" o-- "1" User.Commons.UserACL : contains
+
+    ' User Management SubSystem
+
+    class UserManagementSubSystem {
+        + {static} UserManager userManager
+        + {static} UserSessionManager userSessionManager
+        + {static} UserStorageController userStorageController
+    }
+
+    UserManagementSubSystem "1" o-- "1" UserManager : contains
+    UserManagementSubSystem "1" o-- "1" UserSessionManager : contains
+    UserManagementSubSystem "1" o-- "1" UserStorageController : contains
+}
+
+package User.Inventory {
+    ' UserInventory
+    class ItemUserOwns {
+        + Commons.UserUUID userIdentifier
+        + ItemUUID itemIdentifier
+        + int quantity
+    }
+
+    ItemUserOwns "1" o-- "1" UserUUID : contains
+    ItemUserOwns "1" o-- "1" ItemUUID : contains
+
+    class UserInventory {
+        + List<ItemUserOwns> itemsUserOwns
+    }
+
+    UserInventory "1" o-- "N" ItemUserOwns : contains
+
+    class UserInventoryManager implements Commons.Manager {
+        + {static} UserInventory GetUserInventory()
+    }
+
+    UserInventoryManager --- UserInventory : use
+    UserInventoryManager --- UserInventoryStorageController : use
+
+    class UserInventoryStorageController<T> implements Commons.StorageController {}
+    UserInventoryStorageController --- User.Commons.User : use
+
+    class UserInventorySubSystem {
+        + {static} UserInventoryManager userInventoryManager
+        + {static} UserInventoryStorageController userInventoryStorageController
+    }
+
+    UserInventorySubSystem "1" o-- "1" UserInventoryManager : contains
+    UserInventorySubSystem "1" o-- "1" UserInventoryStorageController : contains
+}
+package User.Profile {
+    ' UserProfile
+    enum ProfileDisplayObjectType {
+        ThemeDefinition
+        StreakChartTheme
+        StatisticsChart
+        StatisticsChartTheme
+        Stand
+        Cover
+        Badge
+        Overlay
+    }
+
+    class ProfileDisplayObjectOptions {}
+
+    class ProfileDisplayObject extends Item.VirtItemContent {
+        + ProfileDisplayObjectType type
+        + ProfileDisplayObjectOptions options
+    }
+
+    ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectType : contains
+    ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectOptions : contains
+
+    class UserProfile {
+        + Commons.UserUUID user
+        + List<ProfileDisplayObject> userProfileDisplayObjects
+    }
+
+    UserProfile "1" o-- "1" UserUUID : contains
+    UserProfile "1" o-- "N" ProfileDisplayObject : contains
+
+    class UserProfileManager implements Commons.Manager {
+        + {static} UserProfile GetUserProfile()
+        + {static} void UpdateUserProfile(UserUUID user, List<ProfileDisplayObject> userProfileDisplayObjects)
+    }
+    UserProfileManager --- UserUUID : use
+    UserProfileManager --- UserProfile : use
+    UserProfileManager --- ProfileDisplayObject : use
+    UserProfileManager --- UserProfileStorageController : use
+
+    class UserProfileStorageController<T> implements Commons.StorageController {}
+
+    class UserProfileSubSystem {
+        + {static} UserProfileManager userProfileManager
+        + {static} UserProfileStorageController userProfileStorageController
+    }
+
+    UserProfileSubSystem "1" o-- "1" UserProfileManager : contains
+    UserProfileSubSystem "1" o-- "1" UserProfileStorageController : contains
+
+}
+@enduml

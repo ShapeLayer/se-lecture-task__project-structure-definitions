@@ -1,0 +1,21 @@
+@startuml
+package Commons {
+    Interface Manager
+    Interface StorageController<T> {
+        + T Query()
+        + void Add()
+        + void Remove()
+        + void Update()
+    }
+
+    class UUID
+    class UserUUID extends UUID
+    class ItemUUID extends UUID
+    class MileageShopItemUUID extends UUID
+    class AuthorUUID extends UUID
+    class BookUUID extends UUID
+    class OrganizationUUID extends UUID
+}
+class String
+String <|-- Commons.UUID
+@enduml

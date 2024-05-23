@@ -18,11 +18,22 @@ package Item {
         Virtual
     }
 
-    class Item {
-        ItemUUID identifier
-        ItemType type
-        String staticAssetID
+    struct Item {
+        + Commons.ItemUUID identifier
+        + ItemType type
+        + String staticAssetID
+        + String name
+        + ItemContent content
+        + ItemMetadata metadata
     }
+
+    Item "1" o-- "1" Commons.ItemUUID : contains
+    Item "1" o-- "1" ItemType : contains
+    Item "1" o-- "1" ItemContent : contains
+    Item "1" o-- "1" ItemMetadata : contains
+
+    class RealItem extends Item {}
+    class VirtItem extends Item {}
 
     Item "1" --- "1" Commons.ItemUUID : contains
     Item "1" --- "1" ItemType : contains

@@ -1,0 +1,576 @@
+@startuml
+package Commons {
+    Interface Manager
+    Interface StorageController<T> {
+        + T Query()
+        + void Add()
+        + void Remove()
+        + void Update()
+    }
+
+    class UUID
+    class UserUUID extends UUID
+    class ItemUUID extends UUID
+    class MileageShopItemUUID extends UUID
+    class AuthorUUID extends UUID
+    class BookUUID extends UUID
+    class OrganizationUUID extends UUID
+}
+class String
+String <|-- Commons.UUID
+
+package Article {
+    enum MarkupType {
+        Text
+        Highlight
+        Line
+        Shape
+        CustomRaster
+        CustomVector
+    }
+
+    struct ArticleMarkup {
+        MarkupType type
+        String content
+    }
+
+    ArticleMarkup "1" o-- "1" MarkupType : contains
+
+    struct Article {
+        + String title
+        + String content
+        + List<ArticleMarkup> markups
+    }
+
+    Article "1" o-- "N" ArticleMarkup : contains
+}
+
+package Books.Book {
+    struct Author {
+        + Commons.AuthorUUID identifier
+        + String name
+    }
+    Author "1" --- "1" Commons.AuthorUUID : contains
+
+    struct Publisher {
+        + Commons.OrganizationUUID identifier
+        + String name
+    }
+    Publisher "1" --- "1" Commons.OrganizationUUID : contains
+
+    struct PublishRev {
+        + date date
+        + int rev
+        + int print
+    }
+
+    struct Book {
+        + Commons.BookUUID identifier
+        + String title
+        + List<Image> covers
+        + List<Author> authors
+        + List<Author> translators
+        + Publisher publisher
+        + int page
+        + List<PublishRev> publishRevs
+        + String isbn
+    }
+    Book "1" o-- "1" Commons.BookUUID : contains
+    Book "1" o-- "N" Image : contains
+    Book "1" o-- "N" Author : contains
+    Book "1" o-- "1" Publisher : contains
+    Book "1" o-- "N" PublishRev : contains
+
+    ' BookDatabaseSubSystem
+
+    class BookDatabaseManager implements Commons.Manager
+
+    class BookDatabaseStorageController<T> implements Commons.StorageController
+    BookDatabaseStorageController --- Books.Book.Book : use
+
+    class BookDatabaseSubSystem {
+        + {static} BookDatabaseManager bookDatabaseManager
+        + {static} BookDatabaseStorageController bookDatabaseStorageController<T>
+    }
+
+    BookDatabaseSubSystem "1" --- "1" BookDatabaseManager : contains
+    BookDatabaseSubSystem "1" --- "1" BookDatabaseStorageController : contains
+}
+
+package Books.BookReview {
+    struct BookReview extends Article.Article {
+        + Books.Book.Book book
+    }
+    BookReview o-- Books.Book.Book : contains
+
+    struct BookReviewBlob 
+    BookReviewBlob "1" --- "N" BookReview
+
+    class BookReviewManager implements Commons.Manager {
+        + BookReviewBlob RequestQueryBookReviewBlob()
+    }
+
+    BookReviewManager --- BookReviewBlob : use
+    BookReviewManager --- BookReviewStorageController : use
+
+    class BookReviewStorageQueryOptimizer {
+        + void invoke()
+    }
+    class BookReviewStorageController<T> implements Commons.StorageController {
+        + BookReviewStorageQueryOptimizer optimizer
+    }
+    BookReviewStorageController "1" o-- "1" BookReviewStorageQueryOptimizer : contains
+    BookReviewStorageController --- BookReview.BookReview : use
+
+    ' BookReview SubSystem
+
+    class BookReviewSubSystem {
+        + {static} BookReviewStorageController bookReviewStorageController
+        + {static} BookReviewManager bookReviewManager
+    }
+    BookReviewSubSystem "1" o-- "1" BookReviewStorageController : contains
+    BookReviewSubSystem "1" o-- "1" BookReviewManager : contains
+
+}
+
+package Books.BookSuggestion {
+    class EmotionChecklist {
+        + Dictionary<K, bool> checkList
+        + String toPrompt()
+    }
+
+    enum BookSuggestionManualRequestType {
+        Normal
+        NewCategory
+        EmotionBased
+    }
+    struct BookSuggestionManualRequest {
+        + BookSuggestionManualRequestType type
+        + String prompt
+    }
+    BookSuggestionManualRequest "1" o-- "1" BookSuggestionManualRequestType : contains
+    EmotionChecklist --o BookSuggestionManualRequest : use
+
+    struct BookSuggestion {}
+    class BookSuggestionTask {}
+
+    class BookSuggestionWorker {
+        - BookSuggestionTask task
+        - void run()
+    }
+    BookSuggestionWorker o-- BookSuggestionTask : contains
+    BookSuggestionWorker --- BookSuggestion : use
+
+    class BookSuggestionScheduler {
+        + BookSuggestionWorker worker
+        - void invoke()
+    }
+
+    BookSuggestionScheduler "1" o-- "1" BookSuggestionWorker : contains
+
+    class BookSuggestionManager implements Commons.Manager {
+        + {static} void InvokeBookSuggestionManual(BookSuggestionManualRequest req)
+        + {static} void PushBookSuggestionRequestQueue()
+    }
+    BookSuggestionManager --- BookSuggestionManualRequest : use
+    BookSuggestionManager --- BookSuggestionScheduler : use
+    BookSuggestionManager --- BookSuggestionStorageController : use
+
+    class BookSuggestionStorageController<T> implements Commons.StorageController {}
+    BookSuggestionStorageController --- BookSuggestion : use
+
+    class BookSuggestionSubSystem {
+        + {static} BookSuggestionManager bookSuggestionManager
+        + {static} BookSuggestionStorageController bookSuggestionStorageController
+        + {static} List<BookSuggestionScheduler> bookSuggestionSchedulers
+    }
+
+    BookSuggestionSubSystem "1" o-- "1" BookSuggestionManager : contains
+    BookSuggestionSubSystem "1" o-- "1" BookSuggestionStorageController : contains
+    BookSuggestionSubSystem "1" o-- "N" BookSuggestionScheduler : contains
+}
+
+
+package Item {
+    enum ItemType {
+        Real
+        Virtual
+    }
+
+    class ItemContent {}
+    class ItemMetadata {}
+    class RealItemMetadata extends ItemMetadata {}
+    class VirtItemMetadata extends ItemMetadata {}
+
+    struct Item {
+        + Commons.ItemUUID identifier
+        + ItemType type
+        + String staticAssetID
+        + String name
+        + ItemContent content
+        + ItemMetadata metadata
+    }
+
+    Item "1" o-- "1" Commons.ItemUUID : contains
+    Item "1" o-- "1" ItemType : contains
+    Item "1" o-- "1" ItemContent : contains
+    Item "1" o-- "1" ItemMetadata : contains
+
+    class RealItem extends Item {}
+    class VirtItem extends Item {}
+}
+
+
+package User.Commons {
+    class User {
+    }
+}
+
+package Mileage.Commons {
+    struct Mileage {
+        + Commons.UserUUID identifier
+        + i64 mileage
+    }
+
+    Mileage -- User.Commons.User : < owns
+}
+
+package Mileage.Management {
+    ' Mileage SubSystem
+    enum MileageChangeOperationType {
+        Add
+        Sub
+        Set
+    }
+
+    class MileageChangeOperationDesc {}
+
+    struct MileageChangeLog {
+        + DateTime invoked
+        + Commons.UserUUID issuer
+        + Commons.UserUUID target
+        + MileageChangeOperationType type
+        + MileageChangeOperationDesc descStreo
+        + String descManual
+    }
+
+    MileageChangeLog "1" o-- Commons.UserUUID : contains
+    MileageChangeLog "1" o-- "1" MileageChangeOperationType : contains
+    MileageChangeLog "1" o-- "1" MileageChangeOperationDesc : contains
+
+    class MileageManager implements Commons.Manager {
+        + {static} Mileage GetUserMileage()
+        + {static} void ChangeMileage()
+    }
+
+    MileageManager --- User.Commons.User : use
+    MileageManager --- Mileage.Commons.Mileage : use
+    MileageManager --- MileageChangeLogManager : use
+    MileageManager --- MileageStorageController : use
+
+    class MileageChangeLogManager {
+        + MileageChangeLog GetMileageChangeLog()
+    }
+
+    MileageChangeLogManager --- MileageChangeLogStorageController : use
+
+    class MileageChangeLogStorageController<T> implements Commons.StorageController {}
+    MileageChangeLogStorageController --- MileageChangeLog : use
+
+    class MileageStorageController<T> implements Commons.StorageController{}
+    MileageStorageController --- Mileage.Commons.Mileage : use
+
+    class MileageSubSystem {
+        + {static} MileageManager mileageManager
+        + {static} MileageStorageController mileageStorageController
+    }
+
+    MileageSubSystem "1" o-- "1" MileageManager : contains
+    MileageSubSystem "1" o-- "1" MileageStorageController : contains
+}
+
+package User.UserManagement {
+    class UserSessionManager implements Commons.Manager {}
+}
+
+package Mileage.Shop {
+    ' MileageShop SubSystem
+    struct MileageShopItem {
+        + Commons.MileageShopItemUUID identifier
+        + Item.Item item
+    }
+
+    MileageShopItem "1" o-- "1" Commons.MileageShopItemUUID : contains
+    MileageShopItem "1" o-- "1" Item.Item : contains
+
+    class MileageShopManager implements Commons.Manager {
+        + void Buy()
+    }
+    MileageShopManager --- MileageShopStorageController : use
+    MileageShopManager --- MileageStorageController : use
+
+    class MileageShopManagementManager implements Commons.Manager {
+        + void Add(Item item)
+        + void Update(Commons.MileageShopItemUUID identifier, Item.Item item)
+        + void Remove(Commons.MileageShopItemUUID identifier)
+    }
+
+    MileageShopManagementManager --- Item.Item : use
+    MileageShopManagementManager --- Commons.MileageShopItemUUID : use
+    MileageShopManagementManager --- User.UserManagement.UserSessionManager : use
+    MileageShopManagementManager --- MileageShopStorageController : use
+
+    class MileageShopStorageController<T> implements Commons.StorageController {}
+    MileageShopStorageController --- MileageShopItem : use
+
+    class MileageShopSubSystem {
+        + {static} MileageShopManagementManager mileageshopManagement
+        + {static} MileageShopManager mileageShopManager
+        + {static} MileageShopStorageController mileageShopStorageController
+    }
+    MileageShopSubSystem "1" o-- "1" MileageShopManagementManager : contains
+    MileageShopSubSystem "1" o-- "1" MileageShopManager : contains
+    MileageShopSubSystem "1" o-- "1" MileageShopStorageController : contains
+}
+
+
+package Ratings.Commons {
+    class Tier {
+        + String name
+    }
+
+    struct RatingTierMatch {
+        + any[] ratingRange
+        + Tier tier
+    }
+    RatingTierMatch "1" --- "1" Tier : contains
+
+    struct Rating {
+        + Commons.UserUUID identifier
+        + any ratings
+    }
+    Rating "1" --- "1" Commons.UserUUID : contains
+}
+
+package Ratings.Management {
+    class RatingManager implements Commons.Manager {
+        + {static} List<RatingTierMatch> ratingTierMatch
+        + {static} Rating GetCurrentUserRating()
+    }
+    RatingManager "1" --- "N" RatingTierMatch : contains
+    RatingManager --- User.Commons.User : use
+    RatingManager --- Rating : use
+    RatingManager --- User.UserManagement.UserSessionManager : use
+    RatingManager --- RatingStorageController : use
+
+    class RatingStorageController<T> implements Commons.StorageController {}
+    RatingStorageController --- Rating : use
+
+    class RatingsSubSystem {
+        + {static} RatingManager ratingManager
+        + {static} RatingStorageController ratingStorageController
+    }
+
+    RatingsSubSystem "1" o-- "1" RatingManager : contains
+    RatingsSubSystem "1" o-- "1" RatingStorageController : contains
+}
+
+package Statistics.Commons {
+    ' MileageChangeBridge
+    class MileageStatisticsBridge {
+        + void UpdateMileageBasedOnStatistics()
+    }
+    MileageStatisticsBridge --- Mileage.Management.MileageManager : use
+}
+
+package Statistics.Computings {
+    ' Statistics
+    class StatisticsComputingData {
+        + Dictionary<K, V> params
+    }
+
+    class StatisticsComputingTask {
+        + StatisticsComputingData statisticsComputingData
+    }
+
+    StatisticsComputingTask "1" --- "1" StatisticsComputingData : contains
+
+}
+
+package Statistics.Management {
+
+    class StatisticsComputingManager implements Commons.Manager {
+        + any QueryStatisticsLog()
+    }
+    StatisticsComputingManager --- Statistics.Management.StatisticsLogStorageController : use
+    StatisticsComputingManager --- User.Commons.User : use
+    ' Todo: StatisticsLog
+
+    class StatisticsLogStorageController<T> implements Commons.StorageController {}
+
+    class StatisticsComputingScheduleHandler {
+        - Statistics.Computings.StatisticsComputingTask task
+        + void InvokeComputing()
+    }
+
+    StatisticsComputingScheduleHandler "1" --- "1" Books.BookReview.BookReviewManager : use
+    StatisticsComputingScheduleHandler "1" o-- "1" Statistics.Computings.StatisticsComputingTask : contains
+    StatisticsComputingScheduleHandler --- Statistics.Commons.MileageStatisticsBridge : use
+
+    ' StatisticsComputing SubSystem
+    class StatisticsComputingSubSystem {
+        + {static} StatisticsComputingManager statisticsComputing
+        + {static} StatisticsLogStorageController statisticsLogStorageController
+        + {static} List<StatisticsComputingScheduleHandler> statisticsComputingScheduleHandlers
+        + {static} void InterruptComputingTask()
+    }
+
+    StatisticsComputingSubSystem "1" o-- "1" StatisticsComputingManager : contains
+    StatisticsComputingSubSystem "1" o-- "1" StatisticsLogStorageController : contains
+    StatisticsComputingSubSystem "1" o-- "N" StatisticsComputingScheduleHandler : contains
+}
+
+
+package User.Commons {
+    class UserACL {
+        + bool canAddPost
+        + bool canRemovePost
+        + bool canUpdatePost
+        + bool canGainMileage
+        + bool canExchangeAtShop
+        + bool isAdministrator
+        + int ToBitwiseInteger()
+        + bool Contains(UserACL other)
+    }
+
+    class User {
+        + Commons.UserUUID identifier
+        + String loginID
+        + String loginPasswordHash
+        + String email
+        + UserACL acl
+    }
+}
+
+package User.Management {
+    class UserManager implements Commons.Manager {
+        + void Register(User.Commons.User _new)
+    }
+    UserManager --- User.Commons.User : use
+    UserManager --- UserStorageController : use
+
+    class UserSessionManager implements Commons.Manager {
+        + void LoginUser(String loginID, String loginPasswordHash)
+        + void Logout()
+        + User.Commons.User GetCurrentLogin()
+    }
+    UserSessionManager --- User.Commons.User : use
+    UserSessionManager --- UserStorageController : use
+
+    class UserStorageController<T> implements Commons.StorageController {}
+    UserStorageController --- User.Commons.User : use
+
+    User.Commons.User "1" o-- "1" Commons.UserUUID : contains
+    User.Commons.User "1" o-- "1" User.Commons.UserACL : contains
+
+    ' User Management SubSystem
+
+    class UserManagementSubSystem {
+        + {static} UserManager userManager
+        + {static} UserSessionManager userSessionManager
+        + {static} UserStorageController userStorageController
+    }
+
+    UserManagementSubSystem "1" o-- "1" UserManager : contains
+    UserManagementSubSystem "1" o-- "1" UserSessionManager : contains
+    UserManagementSubSystem "1" o-- "1" UserStorageController : contains
+}
+
+package User.Inventory {
+    ' UserInventory
+    class ItemUserOwns {
+        + Commons.UserUUID userIdentifier
+        + ItemUUID itemIdentifier
+        + int quantity
+    }
+
+    ItemUserOwns "1" o-- "1" UserUUID : contains
+    ItemUserOwns "1" o-- "1" ItemUUID : contains
+
+    class UserInventory {
+        + List<ItemUserOwns> itemsUserOwns
+    }
+
+    UserInventory "1" o-- "N" ItemUserOwns : contains
+
+    class UserInventoryManager implements Commons.Manager {
+        + {static} UserInventory GetUserInventory()
+    }
+
+    UserInventoryManager --- UserInventory : use
+    UserInventoryManager --- UserInventoryStorageController : use
+
+    class UserInventoryStorageController<T> implements Commons.StorageController {}
+    UserInventoryStorageController --- User.Commons.User : use
+
+    class UserInventorySubSystem {
+        + {static} UserInventoryManager userInventoryManager
+        + {static} UserInventoryStorageController userInventoryStorageController
+    }
+
+    UserInventorySubSystem "1" o-- "1" UserInventoryManager : contains
+    UserInventorySubSystem "1" o-- "1" UserInventoryStorageController : contains
+}
+package User.Profile {
+    ' UserProfile
+    enum ProfileDisplayObjectType {
+        ThemeDefinition
+        StreakChartTheme
+        StatisticsChart
+        StatisticsChartTheme
+        Stand
+        Cover
+        Badge
+        Overlay
+    }
+
+    class ProfileDisplayObjectOptions {}
+
+    class ProfileDisplayObject extends Item.VirtItemContent {
+        + ProfileDisplayObjectType type
+        + ProfileDisplayObjectOptions options
+    }
+
+    ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectType : contains
+    ProfileDisplayObject "1" o-- "1" ProfileDisplayObjectOptions : contains
+
+    class UserProfile {
+        + Commons.UserUUID user
+        + List<ProfileDisplayObject> userProfileDisplayObjects
+    }
+
+    UserProfile "1" o-- "1" UserUUID : contains
+    UserProfile "1" o-- "N" ProfileDisplayObject : contains
+
+    class UserProfileManager implements Commons.Manager {
+        + {static} UserProfile GetUserProfile()
+        + {static} void UpdateUserProfile(UserUUID user, List<ProfileDisplayObject> userProfileDisplayObjects)
+    }
+    UserProfileManager --- UserUUID : use
+    UserProfileManager --- UserProfile : use
+    UserProfileManager --- ProfileDisplayObject : use
+    UserProfileManager --- UserProfileStorageController : use
+
+    class UserProfileStorageController<T> implements Commons.StorageController {}
+
+    class UserProfileSubSystem {
+        + {static} UserProfileManager userProfileManager
+        + {static} UserProfileStorageController userProfileStorageController
+    }
+
+    UserProfileSubSystem "1" o-- "1" UserProfileManager : contains
+    UserProfileSubSystem "1" o-- "1" UserProfileStorageController : contains
+
+}
+
+@enduml

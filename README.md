@@ -1,6 +1,8 @@
 # 소프트웨어공학론 과제 소프트웨어 정의
 
-![](./.github/total.png)  
+![](./.github/total_with_package.png)  
+
+![](./.github/total_without_package.png)  
 
 소프트웨어공학론(전남대, 소프트웨어공학과, 김미수, 2024-1) 소프트웨어 정의 팀 프로젝트
 

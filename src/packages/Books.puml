@@ -54,7 +54,7 @@ package Books.Book {
     Publisher "1" --- "1" Commons.OrganizationUUID : contains
 
     struct PublishRev {
-        + date date
+        + DateTime date
         + int rev
         + int print
     }
@@ -71,7 +71,6 @@ package Books.Book {
         + String isbn
     }
     Book "1" o-- "1" Commons.BookUUID : contains
-    Book "1" o-- "N" Image : contains
     Book "1" o-- "N" Author : contains
     Book "1" o-- "1" Publisher : contains
     Book "1" o-- "N" PublishRev : contains
@@ -91,6 +90,9 @@ package Books.Book {
     BookDatabaseSubSystem "1" --- "1" BookDatabaseManager : contains
     BookDatabaseSubSystem "1" --- "1" BookDatabaseStorageController : contains
 }
+
+class Image
+Books.Book.Book "1" o-- "N" Image : contains
 
 package Books.BookReview {
     struct BookReview extends Article.Article {

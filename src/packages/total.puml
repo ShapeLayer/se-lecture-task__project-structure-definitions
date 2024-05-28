@@ -492,7 +492,7 @@ package User.Inventory {
     ' UserInventory
     class ItemUserOwns {
         + Commons.UserUUID userIdentifier
-        + ItemUUID itemIdentifier
+        + Commons.ItemUUID itemIdentifier
         + int quantity
     }
 

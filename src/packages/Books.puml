@@ -117,7 +117,7 @@ package Books.BookReview {
         + BookReviewStorageQueryOptimizer optimizer
     }
     BookReviewStorageController "1" o-- "1" BookReviewStorageQueryOptimizer : contains
-    BookReviewStorageController --- BookReview.BookReview : use
+    BookReviewStorageController --- Books.BookReview.BookReview : use
 
     ' BookReview SubSystem
 

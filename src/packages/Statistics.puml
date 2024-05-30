@@ -46,13 +46,16 @@ package Statistics.Computings {
 package Statistics.Management {
 
     class StatisticsComputingManager implements Commons.Manager {
-        + any QueryStatisticsLog()
+        + StatisticsLog QueryStatisticsLog()
     }
     StatisticsComputingManager --- Statistics.Management.StatisticsLogStorageController : use
     StatisticsComputingManager --- User.Commons.User : use
-    ' Todo: StatisticsLog
+    StatisticsComputingManager --- StatisticsLog
+
+    class StatisticsLog
 
     class StatisticsLogStorageController<T> implements Commons.StorageController {}
+    StatisticsLogStorageController --- StatisticsLog
 
     class StatisticsComputingScheduleHandler {
         - Statistics.Computings.StatisticsComputingTask task
@@ -68,11 +71,12 @@ package Statistics.Management {
         + {static} StatisticsComputingManager statisticsComputing
         + {static} StatisticsLogStorageController statisticsLogStorageController
         + {static} List<StatisticsComputingScheduleHandler> statisticsComputingScheduleHandlers
-        + {static} void InterruptComputingTask()
+        + {static} void InterruptComputingTask(Statistics.Computings.StatisticsComputingTask task)
     }
 
     StatisticsComputingSubSystem "1" o-- "1" StatisticsComputingManager : contains
     StatisticsComputingSubSystem "1" o-- "1" StatisticsLogStorageController : contains
     StatisticsComputingSubSystem "1" o-- "N" StatisticsComputingScheduleHandler : contains
+    StatisticsComputingSubSystem "1" o-- "1" Statistics.Computings.StatisticsComputingTask : use
 }
 @enduml

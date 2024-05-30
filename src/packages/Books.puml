@@ -104,7 +104,7 @@ package Books.BookReview {
     BookReviewBlob "1" --- "N" BookReview
 
     class BookReviewManager implements Commons.Manager {
-        + BookReviewBlob RequestQueryBookReviewBlob()
+        + BookReviewBlob RequestQueryBookReviewBlob(any[] req)
     }
 
     BookReviewManager --- BookReviewBlob : use
@@ -167,7 +167,7 @@ package Books.BookSuggestion {
 
     class BookSuggestionManager implements Commons.Manager {
         + {static} void InvokeBookSuggestionManual(BookSuggestionManualRequest req)
-        + {static} void PushBookSuggestionRequestQueue()
+        + {static} void PushBookSuggestionRequestQueue(BookSuggestionManualRequest req)
     }
     BookSuggestionManager --- BookSuggestionManualRequest : use
     BookSuggestionManager --- BookSuggestionScheduler : use

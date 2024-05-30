@@ -109,7 +109,7 @@ package Books.BookReview {
     BookReviewBlob "1" --- "N" BookReview
 
     class BookReviewManager implements Commons.Manager {
-        + BookReviewBlob RequestQueryBookReviewBlob()
+        + BookReviewBlob RequestQueryBookReviewBlob(any[] req)
     }
 
     BookReviewManager --- BookReviewBlob : use
@@ -172,7 +172,7 @@ package Books.BookSuggestion {
 
     class BookSuggestionManager implements Commons.Manager {
         + {static} void InvokeBookSuggestionManual(BookSuggestionManualRequest req)
-        + {static} void PushBookSuggestionRequestQueue()
+        + {static} void PushBookSuggestionRequestQueue(BookSuggestionManualRequest req)
     }
     BookSuggestionManager --- BookSuggestionManualRequest : use
     BookSuggestionManager --- BookSuggestionScheduler : use
@@ -261,8 +261,8 @@ package Mileage.Management {
     MileageChangeLog "1" o-- "1" MileageChangeOperationDesc : contains
 
     class MileageManager implements Commons.Manager {
-        + {static} Mileage GetUserMileage()
-        + {static} void ChangeMileage()
+        + {static} Mileage GetUserMileage(User.Commons.User user, Mileage params)
+        + {static} void ChangeMileage(Mileage _old, Mileage _new)
     }
 
     MileageManager --- User.Commons.User : use
@@ -271,7 +271,7 @@ package Mileage.Management {
     MileageManager --- MileageStorageController : use
 
     class MileageChangeLogManager {
-        + MileageChangeLog GetMileageChangeLog()
+        + MileageChangeLog GetMileageChangeLog(MileageChangeLog params)
     }
 
     MileageChangeLogManager --- MileageChangeLogStorageController : use
@@ -306,10 +306,12 @@ package Mileage.Shop {
     MileageShopItem "1" o-- "1" Item.Item : contains
 
     class MileageShopManager implements Commons.Manager {
-        + void Buy()
+        + void Buy(User.Commons.User user, MileageShopItem item)
     }
     MileageShopManager --- MileageShopStorageController : use
     MileageShopManager --- MileageStorageController : use
+    MileageShopManager --- User.Commons.User : use
+    MileageShopManager --- MileageShopItem : use
 
     class MileageShopManagementManager implements Commons.Manager {
         + void Add(Item item)
@@ -402,13 +404,16 @@ package Statistics.Computings {
 package Statistics.Management {
 
     class StatisticsComputingManager implements Commons.Manager {
-        + any QueryStatisticsLog()
+        + StatisticsLog QueryStatisticsLog()
     }
     StatisticsComputingManager --- Statistics.Management.StatisticsLogStorageController : use
     StatisticsComputingManager --- User.Commons.User : use
-    ' Todo: StatisticsLog
+    StatisticsComputingManager --- StatisticsLog
+
+    class StatisticsLog
 
     class StatisticsLogStorageController<T> implements Commons.StorageController {}
+    StatisticsLogStorageController --- StatisticsLog
 
     class StatisticsComputingScheduleHandler {
         - Statistics.Computings.StatisticsComputingTask task
@@ -424,12 +429,13 @@ package Statistics.Management {
         + {static} StatisticsComputingManager statisticsComputing
         + {static} StatisticsLogStorageController statisticsLogStorageController
         + {static} List<StatisticsComputingScheduleHandler> statisticsComputingScheduleHandlers
-        + {static} void InterruptComputingTask()
+        + {static} void InterruptComputingTask(Statistics.Computings.StatisticsComputingTask task)
     }
 
     StatisticsComputingSubSystem "1" o-- "1" StatisticsComputingManager : contains
     StatisticsComputingSubSystem "1" o-- "1" StatisticsLogStorageController : contains
     StatisticsComputingSubSystem "1" o-- "N" StatisticsComputingScheduleHandler : contains
+    StatisticsComputingSubSystem "1" o-- "1" Statistics.Computings.StatisticsComputingTask : use
 }
 
 
@@ -506,11 +512,12 @@ package User.Inventory {
     UserInventory "1" o-- "N" ItemUserOwns : contains
 
     class UserInventoryManager implements Commons.Manager {
-        + {static} UserInventory GetUserInventory()
+        + {static} UserInventory GetUserInventory(User.Commons.User user)
     }
 
     UserInventoryManager --- UserInventory : use
     UserInventoryManager --- UserInventoryStorageController : use
+    UserInventoryManager --- User.Commons.User : use
 
     class UserInventoryStorageController<T> implements Commons.StorageController {}
     UserInventoryStorageController --- User.Commons.User : use
@@ -555,7 +562,7 @@ package User.Profile {
     UserProfile "1" o-- "N" ProfileDisplayObject : contains
 
     class UserProfileManager implements Commons.Manager {
-        + {static} UserProfile GetUserProfile()
+        + {static} UserProfile GetUserProfile(User.Commons.User user)
         + {static} void UpdateUserProfile(UserUUID user, List<ProfileDisplayObject> userProfileDisplayObjects)
     }
     UserProfileManager --- UserUUID : use

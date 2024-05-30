@@ -87,8 +87,8 @@ package Mileage.Management {
     MileageChangeLog "1" o-- "1" MileageChangeOperationDesc : contains
 
     class MileageManager implements Commons.Manager {
-        + {static} Mileage GetUserMileage()
-        + {static} void ChangeMileage()
+        + {static} Mileage GetUserMileage(User.Commons.User user, Mileage params)
+        + {static} void ChangeMileage(Mileage _old, Mileage _new)
     }
 
     MileageManager --- User.Commons.User : use
@@ -97,7 +97,7 @@ package Mileage.Management {
     MileageManager --- MileageStorageController : use
 
     class MileageChangeLogManager {
-        + MileageChangeLog GetMileageChangeLog()
+        + MileageChangeLog GetMileageChangeLog(MileageChangeLog params)
     }
 
     MileageChangeLogManager --- MileageChangeLogStorageController : use
@@ -132,10 +132,12 @@ package Mileage.Shop {
     MileageShopItem "1" o-- "1" Item.Item : contains
 
     class MileageShopManager implements Commons.Manager {
-        + void Buy()
+        + void Buy(User.Commons.User user, MileageShopItem item)
     }
     MileageShopManager --- MileageShopStorageController : use
     MileageShopManager --- MileageStorageController : use
+    MileageShopManager --- User.Commons.User : use
+    MileageShopManager --- MileageShopItem : use
 
     class MileageShopManagementManager implements Commons.Manager {
         + void Add(Item item)

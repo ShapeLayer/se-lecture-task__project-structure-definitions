@@ -113,11 +113,12 @@ package User.Inventory {
     UserInventory "1" o-- "N" ItemUserOwns : contains
 
     class UserInventoryManager implements Commons.Manager {
-        + {static} UserInventory GetUserInventory()
+        + {static} UserInventory GetUserInventory(User.Commons.User user)
     }
 
     UserInventoryManager --- UserInventory : use
     UserInventoryManager --- UserInventoryStorageController : use
+    UserInventoryManager --- User.Commons.User : use
 
     class UserInventoryStorageController<T> implements Commons.StorageController {}
     UserInventoryStorageController --- User.Commons.User : use
@@ -162,7 +163,7 @@ package User.Profile {
     UserProfile "1" o-- "N" ProfileDisplayObject : contains
 
     class UserProfileManager implements Commons.Manager {
-        + {static} UserProfile GetUserProfile()
+        + {static} UserProfile GetUserProfile(User.Commons.User user)
         + {static} void UpdateUserProfile(UserUUID user, List<ProfileDisplayObject> userProfileDisplayObjects)
     }
     UserProfileManager --- UserUUID : use

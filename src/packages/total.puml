@@ -109,7 +109,7 @@ package Books.BookReview {
     BookReviewBlob "1" --- "N" BookReview
 
     class BookReviewManager implements Commons.Manager {
-        + BookReviewBlob RequestQueryBookReviewBlob(any[] req)
+        + BookReviewBlob RequestQueryBookReviewBlob(void[] req)
     }
 
     BookReviewManager --- BookReviewBlob : use
@@ -404,7 +404,7 @@ package Statistics.Computings {
 package Statistics.Management {
 
     class StatisticsComputingManager implements Commons.Manager {
-        + StatisticsLog QueryStatisticsLog()
+        + StatisticsLog QueryStatisticsLog(void query)
     }
     StatisticsComputingManager --- Statistics.Management.StatisticsLogStorageController : use
     StatisticsComputingManager --- User.Commons.User : use

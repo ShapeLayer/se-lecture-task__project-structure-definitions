@@ -46,7 +46,7 @@ package Statistics.Computings {
 package Statistics.Management {
 
     class StatisticsComputingManager implements Commons.Manager {
-        + StatisticsLog QueryStatisticsLog()
+        + StatisticsLog QueryStatisticsLog(void query)
     }
     StatisticsComputingManager --- Statistics.Management.StatisticsLogStorageController : use
     StatisticsComputingManager --- User.Commons.User : use

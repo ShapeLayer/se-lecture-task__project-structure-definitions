@@ -2,7 +2,7 @@
 package Commons {
     Interface Manager
     Interface StorageController<T> {
-        + T Query()
+        + T Query(void params)
         + void Add()
         + void Remove()
         + void Update()
